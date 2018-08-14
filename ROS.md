@@ -10,7 +10,6 @@
 - Master：节点管理器，ROS名称服务
 - rosout：在ROS中相当于stdout/stderr
 - roscore：主机+rosout+参数服务器
-- aaa
 
 ###	节点
 
