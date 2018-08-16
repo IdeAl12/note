@@ -12,7 +12,7 @@
 - rosout：在ROS中相当于stdout/stderr
 - roscore：主机+rosout+参数服务器
 
-###	节点
+	##	节点
 
 ROS节点可以使用ROS客户库与其他节点通信。节点可以发布或接受一个话题。节点也可以提供货使用某种服务。
 
@@ -22,7 +22,7 @@ ROS客户端库允许使用不同编程语言编写的节点之间相互通信�
 
 	rospy = python 客户端库
 	roscpp = c++ 客户端库
-	
+
 ###	roscore
 roscore 是你在运行所有ROS程序前首先要运行的命令。
 
@@ -40,7 +40,7 @@ killall -9 rosmaster
 - rosout用于收集和记录节点调试输出信息，所以总在运行。
 - rosnode info 命令返回的是关于一个特点节点的信息。
 
-###	rosrun 
+	##	rosrun 
 rosrun允许使用包名直接运行一个包内的节点（不需要知道这个包的路径）
 
 ```
@@ -62,7 +62,7 @@ $roscore
 $rosrun turtlesim turtlesim_node
 #使用键盘控制turtle的运动
 $rosrun turtlesim turtle_teleop_key
-``` 
+```
 turtlesim\_node节点和turtle\_teleop\_key节点之间是通过一个ROS话题来互相通信的。
 
 turtle\_teleop\_key 在一个话题上发布按键输入消息，turtlesim则订阅该话题以接受该消息。使用rqt\_graph来显示当前运行的节点和话题。
@@ -94,15 +94,91 @@ rostopic echo可以显示在某个话题上发布的数据。
 
 `$ rostopic echo [topic]`
 
+#### 使用rostopic list
 
+rostopic list能够列出所有当前订阅和发布的话题。
 
+```
+$ rostopic list -h
 
+Usage: rostopic list [/topic]
 
+Options:
+  -h, --help            show this help message and exit
+  -b BAGFILE, --bag=BAGFILE
+                        list topics in .bag file
+  -v, --verbose         list full details about each topic
+  -p                    list only publishers
+  -s                    list only subscribers
+```
 
+在rostopic list中使用verbose选项，会显示出所发布和订阅的话题及其类型的详细信息。
 
+### ROS Messages
 
+话题之间的通信是通过在节点之间发送ROS消息实现的。对于发布器（turtle_teleop_key）和订阅器（turtulesim_node）之间的通信，发布器和订阅器之间必须发送和接受相同类型的消息。话题的类型是有发布在它上面的消息类型决定的。使用rostopic type命令可以查看发布在某个话题上的消息类型。
 
+#### 使用rostopic type
 
+rostopic type命令用于查看所发布话题的消息类型。
 
+用法：
 
+`$rostopic type [topic]`
+
+#### 使用rostopic pub
+
+rostopic pub可以把数据发布到当前某个正在广播的话题上。
+
+用法：
+
+`$rostopic pub [topic] [msg_type] [args]`
+
+示例：发送消息给turtlesim，以2.0大小的线速度和1.8大小的角速度开始移动。
+
+`$ rostopic pub -1 /turtle1/cmd_vel geometry_msgs/Twist -- '[2.0, 0.0, 0.0]' '[0.0, 0.0, 1.8]'`
+
+- rostopic pub 发布消息到某个给定的话题。
+- -1 （单个破折号）使rostopic发布一条消息后马上退出。
+- `/turtle1/cmd_vel` 这是消息所发布到的话题名称。
+- `geometry_msgs/Twist` 这是所发布消息的类型。
+- -- （双破折号）告诉命令选项解析器接下来的参数部分都不是命令选项。这在参数里面包含有破折号-（比如负号）时是必须要添加的。
+
+#### 使用rostopic hz
+
+rostopic hz命令可以用来查看数据发布的频率。
+
+用法：
+
+`$ rostopic hz [topic]`
+
+#### 使用rqt_plot
+
+rqt_plot命令可以实时显示一个发布到某个话题上的数据变化图形。
+
+## ROS服务和参数
+
+简介：介绍ROS服务和参数的知识，以及命令行工具rosservice 和rosparam的使用方法。
+
+### ROS Services
+
+服务（services）是节点之间通讯的另一种方式。服务允许节点发送请求（request）并获得一个响应（response）。
+
+### 使用rosservice
+
+rosservice可以使用ROS客户端/服务器框架提供的服务。
+
+使用方法：
+
+```
+rosservice list		输出可用服务的信息
+rosservice call		调用带参数的服务
+rosservice type		输出服务类型
+rosservice find		依据类型寻找服务
+rosservice uri 		输出服务的ROSRPC uri
+```
+
+#### rosservice list
+
+`$ rosservice list`
 
