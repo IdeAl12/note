@@ -270,3 +270,76 @@ rqt_console属于ROS日志框架（logging framework）的一部分，用来显�
 
 rqt_logger_level允许我们修改节点运行时输出信息的日至等级，包括DEBUG、WARN、INFO和ERROR。
 
+```
+$ rosrun rqt_console rqt_console
+$ rosrun rqt_logger_level rqt_logger_level
+```
+
+#### 日志等级
+
+日志等级按以下优先顺序排列：
+
+```
+Fatal
+Error
+Warn
+Info
+Debug
+```
+
+通过设置日至等级可以获取该等级及其以上优先等级的所有日志消息。比如，将日志等级设为Warn时，会得到 Warn、Error和 Fatal 这三个等级的所有日志消息。
+
+#### 使用roslaunch
+
+roslaunch可以用来启动定义在launch文件中的多个节点。
+
+用法：
+
+```
+$ roslaunch [package] [filename.launch]
+#创建一个launch文件夹
+$ mkdir launch
+$ cd launch
+```
+
+#### Launch文件及解析
+
+创建一个turtlemimic.launch的launch文件。 
+
+```xml
+ <launch>
+
+      <group ns="turtlesim1">
+        <node pkg="turtlesim" name="sim" type="turtlesim_node"/>
+      </group>
+
+      <group ns="turtlesim2">
+        <node pkg="turtlesim" name="sim" type="turtlesim_node"/>
+      </group>
+
+      <node pkg="turtlesim" name="mimic" type="mimic">
+        <remap from="input" to="turtlesim1/turtle1"/>
+        <remap from="output" to="turtlesim2/turtle1"/>
+      </node>
+
+    </launch>
+```
+
+创建了两个节点分组并以命名空间（namespace）标签来区分。
+
+```xml
+   <node pkg="turtlesim" name="mimic" type="mimic">
+       <remap from="input" to="turtlesim1/turtle1"/>
+       <remap from="output" to="turtlesim2/turtle1"/>
+     </node>
+```
+
+启动模仿节点，并将所有话题的输入和输出分别重命名为turtlesim1和turtlesim2，这样就会使turtlesim2模仿turtlesim1。
+
+- launch: Root element of the launch file
+- node: Each <node> tag specifies a node to be launched
+- name: Name of the node (free to choose)
+- pkg: Package containing the node
+- type: Type of the node, there must be a corresponding executable with the same name
+- output: Specifies where to output log messages
+- 注意自关闭标记的语法差异：<tag></tag> and <tag/>
