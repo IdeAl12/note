@@ -6,13 +6,18 @@
 ###	图概念
 
 - Nodes：节点，一个节点即为一个可执行文件，可以通过ROS与其他节点进行通信。
+
 - Messags：消息，消息是一种ROS数据类型，用于订阅或发布到一个话题。
+
 - Topic：话题，节点可以发布消息到话题，也可以订阅话题以接收消息。
+
 - Master：节点管理器，ROS名称服务
+
 - rosout：在ROS中相当于stdout/stderr
+
 - roscore：主机+rosout+参数服务器
 
-	##	节点
+## 节点
 
 ROS节点可以使用ROS客户库与其他节点通信。节点可以发布或接受一个话题。节点也可以提供货使用某种服务。
 
@@ -40,7 +45,8 @@ killall -9 rosmaster
 - rosout用于收集和记录节点调试输出信息，所以总在运行。
 - rosnode info 命令返回的是关于一个特点节点的信息。
 
-	##	rosrun 
+
+##	rosrun 
 rosrun允许使用包名直接运行一个包内的节点（不需要知道这个包的路径）
 
 ```
@@ -181,4 +187,86 @@ rosservice uri 		输出服务的ROSRPC uri
 #### rosservice list
 
 `$ rosservice list`
+
+#### rosservice type
+
+查看服务的类型。
+
+`$ rosservice type [service]`
+
+#### rosservice call
+
+使用rosservice call命令调用服务。
+
+`$ rosservice call [service] [args]`
+
+### 使用rosparam
+
+rosparam可以存储并操作ROS参数服务器（parameter server）上的数据。参数服务器能够存储整型、浮点、布尔、字符串、字典和列表等数据类型。rosparam使用YAML标记语言的语法。YAML的表述：1 是整型, 1.0 是浮点型, one是字符串, true是布尔, [1, 2, 3]是整型列表, {a: b, c: d}是字典
+
+使用方法：
+
+```
+rosparam set            设置参数
+rosparam get            获取参数
+rosparam load           从文件读取参数
+rosparam dump           向文件中写入参数
+rosparam delete         删除参数
+rosparam list           列出参数名
+```
+
+#### rosparam list
+
+查看参数服务器上都有哪些参数。
+
+`$ rosparam list`
+
+#### rosparam set和rosparam get
+
+```
+$ rosparam set [param_name]
+$ rosparam get [param_name]
+```
+
+例如修改turtlesim背景颜色：
+
+```
+$ rosparam set background_r 150
+#调用清除服务使得修改后的参数生效：
+$ rosservice call clear
+```
+
+显示参数服务器上的所有内容：
+
+`$ rosparam get/`
+
+#### rosparam dump 和rosparam load
+
+```
+$ rosparam dump [file_name]
+$ rosparam load [file_name] [namespace]
+```
+
+将所有的参数写入params.yaml文件：
+
+```
+$ rosparam dump params.yaml
+```
+
+将yaml文件重新载入新的命名空间，如copy空间。
+
+```
+$ rosparam load params.yaml copy
+$ rosparam get copy/background_b
+```
+
+## 使用rqt_console和roslaunch
+
+简介：介绍如何使用rqt_console和rqt_logger_level进行调试，以及如何使用roslaunch同时运行多个节点。
+
+### 使用rqt_console和rqt_logger_level
+
+rqt_console属于ROS日志框架（logging framework）的一部分，用来显示节点的输出信息。
+
+rqt_logger_level允许我们修改节点运行时输出信息的日至等级，包括DEBUG、WARN、INFO和ERROR。
 
