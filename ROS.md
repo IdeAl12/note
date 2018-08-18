@@ -343,3 +343,482 @@ $ cd launch
 - type: Type of the node, there must be a corresponding executable with the same name
 - output: Specifies where to output log messages
 - 注意自关闭标记的语法差异：<tag></tag> and <tag/>
+
+## 使用rosed编辑ROS中的文件
+
+简介：介绍如何使用rosed简化编辑过程。
+
+### 使用rosed
+
+rosed是rosbash的一部分。利用它可以直接通过package名来获取到待编辑的文件而无需指定该文件的存储路径。
+
+用法：
+
+`$ rosed [package_name] [filename]`
+
+例：
+
+`$ rosed roscpp Logger.msg`
+
+## 创建ROS消息和ROS服务
+
+简介：介绍如何创建并编译ROS消息的服务，以及rosmsg，rossrv和roscp命令行工具的使用。
+
+### 消息msg和服务srv介绍
+
+- 消息msg：msg文件是一个描述ROS中所使用消息类型的简单文本。会被用来生成不同语言的源代码。msg文件存放在package的msg目录下。msg文件实际上就是每行声明一个数据类型和变量名。可以使用的数据类型如下：
+
+- ```
+  int8, int16, int32, int64 (plus uint*)
+  float32, float64
+  string
+  time, duration
+  other msg files
+  variable-length array[] and fixed-length array[C]
+  ```
+
+  
+
+- 服务srv：一个srv文件描述一项服务，包含两个部分：请求和响应。srv文件则存放在srv目录下。
+
+ROS中一个特殊的数据类型：Header。它含有时间戳和坐标信息。在msg文件的第一行经常可以看到Header header的声明。
+
+srv文件分为请求和响应两部分，由---分隔。
+
+### 使用msg
+
+#### 创建一个msg
+
+```
+$ cd ~/catkin_ws/src/beginner_tutorials
+$ mkdir msg
+$ echo "int64 num" > msg/Num.msg
+```
+
+以确保msg文件被转化为C++、Python和其他语言的源代码，package.xml文件中需要包含以下语句：
+
+```xml
+  <build_depend>message_generation</build_depend>
+  <run_depend>message_runtime</run_depend>
+```
+
+#### 使用rosmsg
+
+通过rosmsg show命令，检查ROS是否能够识别消息。
+
+用法：
+
+`$ rosmsg show [message type]`
+
+例：
+
+`$ rosmsg show beginner_tutorials/Num`
+
+### 使用srv
+
+##### 创建一个srv
+
+```
+$ roscd beginner_tutorials
+$ mkdir srv
+```
+
+roscp可以实现将文件从一个package复制到另一个package的功能。
+
+用法：
+
+```
+$ roscp [package_name] [file_to_copy_path] [copy_path]
+```
+
+#### 使用rossrv
+
+通过rossrv show命令，检查ROS是否能够识别该服务。
+
+用法：
+
+`$ rossrv show <service type>`
+
+### 获得帮助
+
+```
+$ rosmsg -h
+Commands:
+  rosmsg show Show message description
+  rosmsg users  Find files that use message
+  rosmsg md5  Display message md5sum
+  rosmsg package  List messages in a package
+  rosmsg packages List packages that contain messages
+  
+$ rosmsg show -h
+Usage: rosmsg show [options] <message type>
+
+Options:
+  -h, --help  show this help message and exit
+  -r, --raw   show raw message text, including comments
+```
+
+## 编写简单的消息发布器和订阅器（c++）
+
+### 编写发布器节点
+
+节点Node是ROS网络中的可执行文件。创建一个发布器节点talker，将不断在ROS网络中广播消息。
+
+#### 源代码
+
+在beginner_tutorials package 路径下创建一个src文件夹，用来放置beginner_tutorials package 的所有源代码。
+
+```
+$ mkdir -p ~/catkin_ws/src/beginner_tutorials/src
+```
+
+```C++
+   #include "ros/ros.h"
+   #include "std_msgs/String.h"
+
+   #include <sstream>
+
+   /**
+   * This tutorial demonstrates simple sending of messages over the ROS system.
+    */
+   int main(int argc, char **argv)
+   {
+     /**
+     * The ros::init() function needs to see argc and argv so that it can perform
+    * any ROS arguments and name remapping that were provided at the command line. For programmatic
+     * remappings you can use a different version of init() which takes remappings
+    * directly, but for most command-line programs, passing argc and argv is the easiest
+    * way to do it.  The third argument to init() is the name of the node.
+      *
+      * You must call one of the versions of ros::init() before using any other
+      * part of the ROS system.
+      */
+     ros::init(argc, argv, "talker");
+
+     /**
+      * NodeHandle is the main access point to communications with the ROS system.
+      * The first NodeHandle constructed will fully initialize this node, and the last
+      * NodeHandle destructed will close down the node.
+      */
+     ros::NodeHandle n;
+
+     /**
+      * The advertise() function is how you tell ROS that you want to
+      * publish on a given topic name. This invokes a call to the ROS
+      * master node, which keeps a registry of who is publishing and who
+      * is subscribing. After this advertise() call is made, the master
+      * node will notify anyone who is trying to subscribe to this topic name,
+      * and they will in turn negotiate a peer-to-peer connection with this
+      * node.  advertise() returns a Publisher object which allows you to
+      * publish messages on that topic through a call to publish().  Once
+      * all copies of the returned Publisher object are destroyed, the topic
+      * will be automatically unadvertised.
+      *
+      * The second parameter to advertise() is the size of the message queue
+      * used for publishing messages.  If messages are published more quickly
+      * than we can send them, the number here specifies how many messages to
+      * buffer up before throwing some away.
+      */
+     ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
+
+     ros::Rate loop_rate(10);
+
+     /**
+      * A count of how many messages we have sent. This is used to create
+      * a unique string for each message.
+      */
+     int count = 0;
+     while (ros::ok())
+     {
+       /**
+        * This is a message object. You stuff it with data, and then publish it.
+        */
+       std_msgs::String msg;
+
+       std::stringstream ss; 
+       ss << "hello world " << count;
+       msg.data = ss.str();
+
+       ROS_INFO("%s", msg.data.c_str());
+
+       /**
+        * The publish() function is how you send messages. The parameter
+        * is the message object. The type of this object must agree with the type
+        * given as a template parameter to the advertise<>() call, as was done
+        * in the constructor above.
+       */
+      chatter_pub.publish(msg);
+
+      ros::spinOnce();
+
+      loop_rate.sleep();
+      ++count;
+    }
+
+
+    return 0;
+  }
+
+```
+
+#### 代码说明
+
+```C++
+#include"ros/ros.h"
+```
+
+ros/ros.h是一个实用的头文件，引用了ROS系统中大部分常用的头文件。
+
+```C++
+#include"std_msgs/String.h"
+```
+
+引用std_msgs/String消息，存放在std_msgs package里，是由String.msg文件自动生成的头文件。
+
+```C++
+ros::init(argc, argv, "talker");
+```
+
+初始化ROS。允许ROS通过命令进行名称重映射，在运行过程中，节点的名称必须唯一。名称必须是一个base name，即名称内不能包含/等符号。
+
+```C++
+ros::NodeHandle n;
+```
+
+为这个进程的节点创建一个句柄。第一个创建的NodeHandle会为节点进行初始化，最后一个销毁的NodeHandle则会释放该节点所占用的所有资源。
+
+```c++
+ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
+```
+
+告诉master要在chatter话题上发布std_msgs/String消息类型的消息。第二个参数是发布序列的大小。
+
+NodeHandle::advertise()返回一个ros::Publisher对象，有两个作用：1）有一个publish()成员函数可以让你在topic上发布消息；2）如果消息类型不对，会拒绝发布。
+
+```c++
+ros::Rate loop_rate(10);
+```
+
+ros::Rate对象允许指定自循环的频率。它会追踪记录自上一次调用Rate::sleep()后时间的流逝，并休眠直到一个频率周期的时间。
+
+```c++
+int count = 0;
+while (ros::ok())
+{
+```
+
+roscpp会默认生成一个SIGNT句柄，负责处理Ctrl-C键盘操作--使得ros::ok()返回false。
+
+如果下列条件之一发生，ros::ok() 返回false：
+
+- 列表项SIGINT 被触发 (Ctrl-C)
+- 列表项被另一同名节点踢出 ROS 网络
+- 列表项ros::shutdown() 被程序的另一部分调用
+- 节点中的所有 ros::NodeHandles 都已经被销毁 一旦 ros::ok() 返回 false, 所有的 ROS 调用都会失效。
+
+```c++
+std_msgs::String msg;
+
+std::stringstream ss;
+ss << "hello world " << count;
+msg.data = ss.str();
+```
+
+使用一个由msg file文件产生的‘消息自适应’类在ROS网络中广播消息。
+
+```C++
+      chatter_pub.publish(msg);
+```
+
+向所有订阅chatter话题的节点发送消息。
+
+```c++
+ ROS_INFO("%s", msg.data.c_str());
+```
+
+ROS_INFO 和其他类似的函数可以用来代替 printf/cout 等函数。
+
+```c++
+ loop_rate.sleep();
+```
+
+调用 ros::Rate 对象来休眠一段时间以使得发布频率为 10Hz。
+
+总结：
+
+- 列表项初始化 ROS 系统
+- 列表项在 ROS 网络内广播我们将要在 chatter 话题上发布 std_msgs/String 类型的消息
+- 列表项以每秒 10 次的频率在 chatter 上发布消息
+
+ ### 编写订阅器节点
+
+#### 源代码
+
+在 beginner_tutorials package 目录下创建 src/listener.cpp 文件。
+
+```c++
+#include "ros/ros.h"
+   #include "std_msgs/String.h"
+
+   /**
+    * This tutorial demonstrates simple receipt of messages over the ROS system.
+    */
+   void chatterCallback(const std_msgs::String::ConstPtr& msg)
+   {
+     ROS_INFO("I heard: [%s]", msg->data.c_str());
+   }
+
+   int main(int argc, char **argv)
+   {
+     /**
+      * The ros::init() function needs to see argc and argv so that it can perform
+      * any ROS arguments and name remapping that were provided at the command line. For programmatic
+      * remappings you can use a different version of init() which takes remappings
+      * directly, but for most command-line programs, passing argc and argv is the easiest
+      * way to do it.  The third argument to init() is the name of the node.
+      *
+      * You must call one of the versions of ros::init() before using any other
+      * part of the ROS system.
+      */
+     ros::init(argc, argv, "listener");
+
+     /**
+      * NodeHandle is the main access point to communications with the ROS system.
+     * The first NodeHandle constructed will fully initialize this node, and the last
+      * NodeHandle destructed will close down the node.
+      */
+     ros::NodeHandle n;
+
+     /**
+      * The subscribe() call is how you tell ROS that you want to receive messages
+      * on a given topic.  This invokes a call to the ROS
+      * master node, which keeps a registry of who is publishing and who
+      * is subscribing.  Messages are passed to a callback function, here
+      * called chatterCallback.  subscribe() returns a Subscriber object that you
+      * must hold on to until you want to unsubscribe.  When all copies of the Subscriber
+      * object go out of scope, this callback will automatically be unsubscribed from
+      * this topic.
+      *
+      * The second parameter to the subscribe() function is the size of the message
+      * queue.  If messages are arriving faster than they are being processed, this
+      * is the number of messages that will be buffered up before beginning to throw
+      * away the oldest ones.
+      */
+     ros::Subscriber sub = n.subscribe("chatter", 1000, chatterCallback);
+
+     /**
+      * ros::spin() will enter a loop, pumping callbacks.  With this version, all
+      * callbacks will be called from within this thread (the main one).  ros::spin()
+      * will exit when Ctrl-C is pressed, or the node is shutdown by the master.
+      */
+     ros::spin();
+
+     return 0;
+   }
+```
+
+#### 代码说明
+
+```c++
+ void chatterCallback(const std_msgs::String::ConstPtr& msg)
+   {
+     ROS_INFO("I heard: [%s]", msg->data.c_str());
+   }
+```
+
+回调函数，当接收到chatter话题的时候会被调用。消息以boost shared_ptr指针的形式传输。
+
+```c++
+ros::Subscriber sub = n.subscribe("chatter", 1000, chatterCallback);
+```
+
+当有消息发布到chatter话题上时，ROS就会调用chatterCallback()函数。第二个参数是队列大小。
+
+NodeHandle::subscribe()返回ros::Subscriber对象，必须使其处于活动状态直到不再订阅该消息。当这个对象销毁时，会自动退订chatter话题的消息。
+
+```c++
+ros::spin();
+```
+
+ros::spin()进入自循环，可以尽可能快的调用消息回调函数。如果没有消息到达，它不会占用很多 CPU。一旦 ros::ok() 返回 false，ros::spin() 就会立刻跳出自循环。
+
+总结：
+
+- 列表项初始化ROS系统
+- 列表项订阅 chatter 话题
+- 列表项进入自循环，等待消息的到达
+- 列表项当消息到达，调用 chatterCallback() 函数
+
+## 编写服务器和客户端(C++)
+
+简介：介绍如何用C++编写服务器Service和客户端Client节点。
+
+### 编写Service节点
+
+创建一个简单的service节点add_two_ints_server。
+
+在 beginner_tutorials 包中创建`src/add_two_ints_server.cpp`文件。
+
+```c++
+ #include "ros/ros.h"
+    #include "beginner_tutorials/AddTwoInts.h"
+
+    bool add(beginner_tutorials::AddTwoInts::Request  &req,
+             beginner_tutorials::AddTwoInts::Response &res)
+    {
+      res.sum = req.a + req.b;
+      ROS_INFO("request: x=%ld, y=%ld", (long int)req.a, (long int)req.b);
+      ROS_INFO("sending back response: [%ld]", (long int)res.sum);
+      return true;
+    }
+
+    int main(int argc, char **argv)
+    {
+      ros::init(argc, argv, "add_two_ints_server");
+      ros::NodeHandle n;
+
+      ros::ServiceServer service = n.advertiseService("add_two_ints", add);
+      ROS_INFO("Ready to add two ints.");
+      ros::spin();
+
+      return 0;
+    }
+```
+
+### 编写Client节点
+
+在 beginner_tutorials 包中创建`src/add_two_ints_client.cpp`文件。
+
+```c++
+    #include "ros/ros.h"
+    #include "beginner_tutorials/AddTwoInts.h"
+    #include <cstdlib>
+
+    int main(int argc, char **argv)
+    {
+      ros::init(argc, argv, "add_two_ints_client");
+      if (argc != 3)
+      {
+        ROS_INFO("usage: add_two_ints_client X Y");
+        return 1;
+      }
+
+      ros::NodeHandle n;
+      ros::ServiceClient client = n.serviceClient<beginner_tutorials::AddTwoInts>("add_two_ints");
+       beginner_tutorials::AddTwoInts srv;
+       srv.request.a = atoll(argv[1]);
+       srv.request.b = atoll(argv[2]);
+       if (client.call(srv))
+       {
+         ROS_INFO("Sum: %ld", (long int)srv.response.sum);
+       }
+       else
+       {
+        ROS_ERROR("Failed to call service add_two_ints");
+         return 1;
+       }
+
+      return 0;
+     }
+```
+
