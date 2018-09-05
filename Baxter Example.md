@@ -172,3 +172,42 @@ if __name__ == '__main__':
            
 ```
 
+## Display an image to Baxter's head
+
+Display an image (e.g. .png or .jpg) to Baxter's head display. Baxter display resolution is 1024 * 600 pixels.
+
+```
+$ rosrun baxter_examples xdisplay_image.py --file=`rospack find baxter_examples`/share/images/baxterworking.png
+# Replace the --file argument with the path to your own image.
+```
+
+## Gripper Control 
+
+Uses the keyboard or joystick to control Baxters grippers. Position, velocity, holding, and moving force can be controlled and sensed. Both logitech and xbox game controllers are supported.
+
+```
+$ rosrun baxter_examples gripper_keybiard.py
+# You will have to calibrate both grippers before using any of the other commands using C/c commands.
+
+# You can monitor the changes you are making using the following rostopics which you can monitor from a different shell:
+$ rostopic echo /robot/end_effector/left_gripper/command
+$ rostopic echo /robot/end_effector/right_gripper/command
+```
+
+## Head Movement Example
+
+The Head "Wobbler" Example randomly moves the head to demonstrate using the hand pan and nod interfaces.
+
+Baxter's head can move up and down in a nod_motion, and rotate left-to-right in a pan_motion. The head nod motion is a single action that can be triggered to run, but cannot be set to a specific angle. The pand motion swings Baxters 'face' to a settable angle, rotating around the vertical axes of the head.
+
+```
+$ rosrun baxter_examples head_wobbler.py
+# Baxter's head will nod and begin panning left and right to random angles.
+```
+
+### baxter_interafce APIs
+
+- Head class: head.py
+- command_nod()
+- set_pan(<angle>)
+
