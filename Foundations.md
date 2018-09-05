@@ -8,3 +8,7 @@ The SDK interfaces with the Baxter Research Robot via ROS(Robot Operating System
 
 ![RSDK_Arch](/Users/lixiang/Downloads/RSDK_Arch.png)
 
+## SDK Examples
+
+More examples are in Baxter Examples.
+
