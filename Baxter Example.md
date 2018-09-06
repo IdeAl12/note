@@ -421,6 +421,25 @@ $ rosrun baxter_examples head_wobbler.py
 - command_nod()
 - set_pan(<angle>)
 
+### Code Walkthrough
+
+```python
+import argparse
+import random
+
+import rospy
+import baxter_interface
+from baxter_interface import CHECK_VERSION
+
+class Wobbler(object):
+    def __init__(self):
+        self._done = False
+        self._head = baxter_interface.Head()
+        
+```
+
+
+
 ## Head Action Client Example
 
 The Head Action Client Example moves the head through a set of head positions and velocities to showcase an interface for the Head Action Server.
