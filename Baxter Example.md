@@ -181,6 +181,71 @@ $ rosrun baxter_examples xdisplay_image.py --file=`rospack find baxter_examples`
 # Replace the --file argument with the path to your own image.
 ```
 
+### Code Walkthrough
+
+```python
+import os
+import sys
+import argparse
+
+import rospy
+
+import cv2
+import cv_bridge
+# The cv2 library is imported to read images as cv2 messages and perform various processing on it. The cv_bridge is used to convert between OpenCV and ROS images.
+from sensor_msgs.msg import (
+	image,
+)
+
+def send_image(path):
+    im = cv2.imread(path)
+    # The imread() is an OpenCV function that is used to load images as 2D numpy arrays. It is important to read the images as 2D numpy arrays in OpenCV 2.0 in order to execute various OpenCV algorithms on them.
+    msg = cv_bridge.cvBridge().cv2_to_imgmsg(img, encoding="bgr8")
+    # The OpenCV image has to be converted into ROS image message in order to send them as ROS messages or perform any ROS functions on it. The cv_bridge is used to convert between ROS and OpenCV images. The cv2_to_image converts the OpenCV image to ROS image.
+    pub = rospy.Publisher('/robot/xdisplay', Image, latch=True)
+    # The ROS image is published to the /robot/xdisplay topic
+    pub.publish(msg)
+    # Sleep to allow for image to be published
+    rospy.sleep(1)
+def main():
+    # Pass the relative or absolut file path to an image file on your computer, and the example will read and convert the image using cv_bridge, sending it to the screen as a standard ROS Image Message.
+    epilog = 
+    arg_fmt = argparse.RawDescriptionHelpFormatter
+    parser = argparse.ArgumentParser(formatter_class=arg_fmt,
+                                     description=main.__doc__,
+                                     epilog=epilog)
+    required = parser.add_argument_group('required arguments')
+    required.add_argument(
+    	'-f', '--file', metavar='PATH', required=True,
+    	help='Path to image file to send'
+    )
+    parser.add_argument(
+    	'-d', '--delay', metavar='SEC', type=float, default=0.0,
+    	help='Time in seconds to wait before publishing image'
+    )
+    args = parser.parse_args(rospy.myargv()[1:])
+    # The path of the image to be loaded, and the delay in publishing the images are captured as user arguments.
+    rospy.init_node('rsdk_xdisplay_image', anonymous=True)
+    
+    if not os.access(args.file, os.R_OK):
+        rospy.logerr("Cannot read file at '%s'" % (args.file,))
+        return 1
+    # The rospy node is initialized. Then the readability of the path entered by the user is verified.
+    if args.delay > 0:
+        rospy.loginfo(
+        	"Waiting for $s second(s) before publishing image to face" % (args.delay,)
+        )
+        rospy.sleep(args.delay)
+        
+    send_image(args.file)
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main())
+```
+
+
+
 ## Gripper Control 
 
 Uses the keyboard or joystick to control Baxters grippers. Position, velocity, holding, and moving force can be controlled and sensed. Both logitech and xbox game controllers are supported.
@@ -193,6 +258,151 @@ $ rosrun baxter_examples gripper_keybiard.py
 $ rostopic echo /robot/end_effector/left_gripper/command
 $ rostopic echo /robot/end_effector/right_gripper/command
 ```
+
+### Code Walthrough
+
+```python
+import argparse
+import rospy
+
+import baxter_interface
+import baxter_external_devices
+# This imports the baxter interface for accessing the limb and the gripper class. The baxter_external_devices is imported to use its getch function that captures the key presses on the keyboard.
+from baxter_interface import CHECK_VERSION
+
+def map_keyboard():
+    # initialize interfaces
+    print("Getting robot state... ")
+    rs = baxter_interface.RobotEnable(CHECK_VERSION)
+    init_state = rs.state().enabled
+    left = baxter_interface.Gripper('left', CHECK_VERSION)
+    right = baxter_interface.Gripper('right', CHECK_VERSION)
+    # The init_state variable captures the current state of the robot. 
+    def clean_shutdown():
+        if not init_state:
+            print("Disabling robot...")
+            rs.disable()
+        print("Exiting example.")
+    rospy.on_shutdown(clean_shutdown)
+    # On shutdown request, Baxter's state is sent back to its initial state.
+    def capability_warning(gripper, cmd):
+        msg = ("%s %s - not capable of '%s' command" %
+               (gripper.name, gripper.type(), cmd))
+        rospy.logwarn(msg)
+        # This function is invoked when a gripper control command is called with custom grippers. It displays a warning message.
+    def offset_position(gripper, offset):
+        if gripper.type() != 'electric':
+            capability_warning(gripper, 'command_position')
+            return
+        current = gripper.position()
+        gripper.command_position(current + offset)
+        # The gripper tyoe is checked for an electric gripper. The command_position() sets the gripper to the commanded position. It moves the fingers from close(0) to open(100) state based on the passed double vale.
+	def offset_holding(gripper, offset):
+        if gripper.type() != 'electric':
+            capability_warning(gripper, 'set_holding_force')
+            return
+        current = gripper.parameters()['holding_force']
+        gripper.set_holding_force(current + offset)
+        # set_holding_force() method is used to set the force of the grippers when the fingers come in contact with an object between them.
+	def offset_moving(gripper, offset):
+        if gripper.type() != 'electric':
+            capability_warning(gripper, 'set_moving_force')
+            return
+        current = gripper.parameters()['moving_force']
+        gripper.set_moving_force(current + offset)
+        # set_moving_force() method is used to set the force of the grippers immediately before the fingers come in contact with an object between them.
+	def offset_velocity(gripper, offset):
+        if gripper.type() != 'electric':
+            capability_warning(gripper, 'set_velocity')
+            return
+        current = gripper.parameters()['velocity']
+        gripper.set_velocity(current + offset)
+        # set_velocity() method is used to set the velocity at which the grippers would open/close.
+	def offset_dead_band(gripper. offset):
+        if gripper.type() != 'electric':
+            capability_warning(gripper, 'set_dead_band')
+            return
+        current = gripper.parameters()['dead_zone']
+        gripper.set_dead_band(current + offset)
+        # set_dead_band() method is used to set the dead zone of the grippers. Precisely, it refers to the minimum distance between the gripper fingers when they are in closed state.
+	 bindings = {
+     #   key: (function, args, description)
+         'r': (left.reboot, [], "left: reboot"),
+         'R': (right.reboot, [], "right: reboot"),
+         'c': (left.calibrate, [], "left: calibrate"),
+         'C': (right.calibrate, [], "right: calibrate"),
+         'q': (left.close, [], "left: close"),
+         'Q': (right.close, [], "right: close"),
+         'w': (left.open, [], "left: open"),
+         'W': (right.open, [], "right: open"),
+         '[': (left.set_velocity, [100.0], "left:  set 100% velocity"),
+         '{': (right.set_velocity, [100.0], "right:  set 100% velocity"),
+         ']': (left.set_velocity, [30.0], "left:  set 30% velocity"),
+         '}': (right.set_velocity, [30.0], "right:  set 30% velocity"),
+         's': (left.stop, [], "left: stop"),
+         'S': (right.stop, [], "right: stop"),
+         'z': (offset_dead_band, [left, -1.0], "left:  decrease dead band"),
+         'Z': (offset_dead_band, [right, -1.0], "right:  decrease dead band"),
+         'x': (offset_dead_band, [left, 1.0], "left:  increase dead band"),
+         'X': (offset_dead_band, [right, 1.0], "right:  increase dead band"),
+         'f': (offset_moving, [left, -5.0], "left:  decrease moving force"),
+         'F': (offset_moving, [right, -5.0], "right:  decrease moving force"),
+         'g': (offset_moving, [left, 5.0], "left:  increase moving force"),
+         'G': (offset_moving, [right, 5.0], "right:  increase moving force"),
+         'h': (offset_holding, [left, -5.0], "left:  decrease holding force"),
+         'H': (offset_holding, [right, -5.0], "right:  decrease holding force"),
+         'j': (offset_holding, [left, 5.0], "left:  increase holding force"),
+         'J': (offset_holding, [right, 5.0], "right:  increase holding force"),
+         'v': (offset_velocity, [left, -5.0], "left:  decrease velocity"),
+         'V': (offset_velocity, [right, -5.0], "right:  decrease velocity"),
+         'b': (offset_velocity, [left, 5.0], "left:  increase velocity"),
+         'B': (offset_velocity, [right, 5.0], "right:  increase velocity"),
+         'u': (offset_position, [left, -15.0], "left:  decrease position"),
+         'U': (offset_position, [right, -15.0], "right:  decrease position"),
+         'i': (offset_position, [left, 15.0], "left:  increase position"),
+         'I': (offset_position, [right, 15.0], "right:  increase position"),
+     }
+    
+    done = False
+    print("Enabling robot...")
+    rs.enable()
+    print("Controlling grippers.Press ? for help, Esc to quit.")
+    while not done and not rospy.is_shutdown():
+        c = baxter_external_devices.getch()
+        if c:
+            if c in ['\x1b', '\x03']:
+                done = True
+        elsif c in bindings:
+            cmd = bindings[c]
+            cmd[0](*cmd[1])
+            print("command: %s" % (cmd[2],))
+        else:
+            print("key bindings: ")
+            print("  Esc: Quit")
+            print("  ?: Help")
+            for key, val in sorted(bindings.items(),
+                                   key=lamda x: x[1][2]):
+                print("  %s: %s" % (key, val[2]))
+	rospy.signal_shutdown("Example finished.")
+
+def main():
+    epilog = 
+    arg_fmt = argsparse.RawDescriptionHelpFormatter
+    parser = argparse.ArgumentParser(formatter_class=arg_fmt,
+                                     description=main.__doc__,
+                                     epilog=epilog)
+    parser.parse_args(rospy.myargv()[1:])
+    
+    print("Initializing node... ")
+    rospy.init_node("rsdk_gripper_keyboard")
+    map_keyboard()
+    
+if __name__ == '__main__':
+    main()
+        
+```
+
+
 
 ## Head Movement Example
 
