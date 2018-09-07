@@ -525,5 +525,64 @@ import baxter_interface
 
 from baxter_interface import CHECK_VERSION
 
+class HeadClient(object):
+    def __init__(self):
+        ns = 'robot/head/head_action'
+        self._client = actionlib.SimpleActionClient(
+        	ns,
+        	SingleJointPositionAction
+        )
+        self._goal = SingleJointPositionGoal()
+        
+        # Wait 10 seconds for the head action server to start or exit
+        if not self._client.wait_for_server(rospy.Duration(10.0)):
+            rospy.logerr("Exiting - Head Action Server Not Found")
+            rospy.signal_shutdown("Action Server not found")
+            sys.exit(1)
+        self.clear()
+        
+	def command(self, position, velocity):
+        self._goal.position = position
+        self._goal.max_velocity = velocity
+        self.client.send_goal(self.goal)
+        # HeadClient.command() takes as arguments a position and velocity. They are packed into the goal object and sent to the Head Action Server.
+	def stop(self):
+        self._client.cancel_goal()
+        
+    def wait(self, timeout=5.0):
+        self._client.wait_for_result(timeout=rospy.Duration(timeout))
+        return self._client.get_result()
+    
+    def clear(self):
+        slef._goal = SingleJointPositionGoal()
+
+def main():
+    arg_fmt = argparse.RawDescriptionHelpFormatter
+    parser = argparse.ArgumentParser(formatter_class=arg_fmt,
+                                     description=main.__doc__)
+    parser.parse_args(rospy.myargv()[1:])
+    # The beginning of the main function parses any parameters passed into this example when it is invoked from the command line.
+    print("Initializing node...")
+    rospy.init_node("rsdk_head_action_client")
+    print("Getting robot state...")
+    rs = baxter_interface.RobotEnable(CHECK_VERSION)
+    print("Enabling robot...")
+    rs.enable()
+    print("Running. Ctrl-c to quit")
+    hc = HeadClient()
+    hc.command(position=0.0, velocity=100.0)
+    hc.wait()
+    hc.command(position=1.57, velocity=10.0)
+    hc.wait()
+    hc.command(position=0.0, velocity=80.0)
+    hc.wait()
+    hc.command(position=-1.0, velocity=40.0)
+    hc.wait()
+    hc.command(position=0.0, velocity=60.0)
+    print hc.wait()
+    print "Exiting - Head Action Test Example Complete"
+    
+if __name__ == "__main__":
+    main()
 ```
 
