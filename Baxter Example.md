@@ -586,3 +586,107 @@ if __name__ == "__main__":
     main()
 ```
 
+## IK Service Example
+
+The IK Test example shows the very basics of calling the on-robot Inverse-Kinematics (IK) Service to obtain a joint angles solution for a given endpoint Cartesian point & orientation. Inverse Kinematics is used to convert between the Cartesian (x, y, z, roll, pitch, yaw) sace representation, to actual controllable 7-DOF joint states.
+
+```
+$ rosrun baxter_examples ik_service_client.pyp -1 left
+```
+
+### Code Walkthrough
+
+```python
+import argparse
+import sys
+import rospy
+
+from geometry_msgs.msg import (
+	PoseStamped,
+	Pose,
+	Point,
+	Quaterntion,
+)
+from std_msgs.msg import Header
+
+from baxter_core_msgs.srv import (
+	SolvePositionIK,
+	SolvePositionIKRequest,
+)
+# The geometry message types are imported to build the request message for the IK service. The custom request and response message types are imported from the baxter_core_msgs package.
+def ik_test(limb):
+    rospy.init_node("rsdk_ik_service_client")
+    ns = "ExternalTools/" + limb + "/PositionKinematicsNode/IKservice"
+    iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
+    hdr = Header(stamp=rospy.Time.now(), frame_id='base')
+    
+    poses = {
+         'left': PoseStamped(
+             header=hdr,
+             pose=Pose(
+                 position=Point(
+                     x=0.657579481614,
+                     y=0.851981417433,
+                     z=0.0388352386502,
+                 ),
+                 orientation=Quaternion(
+                     x=-0.366894936773,
+                     y=0.885980397775,
+                     z=0.108155782462,
+                     w=0.262162481772,
+                 ),
+             ),
+         ),
+         'right': PoseStamped(
+             header=hdr,
+             pose=Pose(
+                 position=Point(
+                     x=0.656982770038,
+                     y=-0.852598021641,
+                     z=0.0388609422173,
+                 ),
+                 orientation=Quaternion(
+                     x=0.367048116303,
+                     y=0.885911751787,
+                     z=-0.108908281936,
+                     w=0.261868353356,
+                 ),
+             ),
+         ),
+     }
+ 
+    ikreq.pose_stamp.append(poses[limb])
+    
+    try:
+        rospy.wait_for_service(ns, 5.0)
+        resp = iksvc(ikreq)
+	except (rospy.ServiceException, rospy.ROSException), e:
+        rospy.logerr("Service call failed: %s" % (e,))
+        return 1
+    # With a timeout of 5 seconds, the IK service is called along with the IK request message. The resp objects captures the response message which contains the joint positions. It throws an error on timeout.
+    if (resp.isValid[0]):
+        print("SUCCESS - Valid Joint Solution Found:")
+        # Format solution into Limb API-compatible dictionary
+        limb_joints = dict(zip(resp.joints[0].name, resp.joints[0].position))
+        print limb_joints
+    else:
+        print("INVALID POSE - No Valid Joint Solution Found.")
+    return 0    
+	# The isValid[0] field is boolean variable that indicates whether a successfull solution for the IK was found or not. 
+def main():
+    arg_fmt = argparse.RawDescriptionHelpFormatter
+    parse = argparse.ArgumentParser(formatter_class=arg_fmt,
+                                    description=main.__doc__)
+    parser.add_argument(
+    	'-1', '--limb', choices=['left', 'right'], required=True,
+    	help="the limb to test"
+    )
+    args = parser.parse_args(rospy.myargv()[1:])
+    return ik_test(args.limb)
+
+if __name == '__main__':
+    sys.exit(main())
+```
+
+## Input and Outputs on Baxter
+
