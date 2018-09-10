@@ -957,3 +957,71 @@ if __name__ == '__main__':
     main()
 ```
 
+## Joint Torque Control
+
+This example shows joint torque control usage. After moving to neutral, the robot will enter torque control mode, applying torques representing virtual springs holds to their start position.
+
+```
+$ rosrun baxter_examples joint_torque_springs.py
+# In another terminal
+$ rosrun rqt_reconfigure rqt_reconfigure
+```
+
+### Code Walkthrough
+
+**interfaces**-
+
+- Limb.set_joint_torques(<*double*>)
+- Limb.move_to_neutral()
+- Limb.joint_angles
+- Limb.joint_velocities
+- Limb.set_command_timeout(<*double*>)
+- Limb.exit_control_mode()
+
+```python
+import argparse
+import rospy
+from dynamic_reconfigure.server import(
+	Server,
+)
+from std_msgs.msg impoer (
+	Empty,
+)
+
+import baxter_interface
+
+from baxter_example.cfg import (
+	JointSpringsExampleConfig,
+)
+from baxter_interface import CHECK_VERSION
+
+class JointSprings(object):
+    def __init__(self, limb, reconfig_server):
+        self._dyn = reconfig_server
+        self._rate = 1000.0
+        self._missed_cmds = 20.0
+        
+        #creat limb instance
+        self._limb = baxter_interface.Limb(limb)
+        
+        #initialize parameters
+        self._springs = dict()
+        self._damping = dict()
+        self._start_angles = dict()
+        
+        #creat cuff disable publisher
+		cuff_ns = 'robot/limb/' + limb + '/suppress_cuff_interaction'
+        self._pub_cuff_disable = rospy.Publisher(cuff_ns, Empty, queue_size=1)
+        
+        #verify robot is enabled 
+        print("Getting robot state... ")
+        self._rs = baxter_interface.robotEnable(CHECK_VERSION)
+        self._init_state = self._rs.state().enabled
+        print._rs.enable()
+        print("Running. Ctrl-c to quit")
+ def _update_parameters(self):
+    for joint in self._limb.joint_names():
+        self._springs[joint] = self._dyn.config[joint[-2:] +                                                     '_spring_stiffness']
+        self._damping[joint] = self._dyn.config[joint[-2:] +                                                    '_damping_coefficient'
+```
+
