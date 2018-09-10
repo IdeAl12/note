@@ -1,3 +1,7 @@
+
+
+[TOC]
+
 # Baxter Example
 
 ## Joint Position Keyboard Example
@@ -689,4 +693,267 @@ if __name == '__main__':
 ```
 
 ## Input and Outputs on Baxter
+
+The Digital and Analog IO components include most of the buttons and On/Off LEDs on the robot. These smaple programs show how to use the python interfaces and provide a demonstration of using the command and status messages of the components. 
+
+```
+# Start the DigitalIO example.This example will blink the LED on the Left Navigator on and then off while printing the status before and after.
+$ rosrun baxter_examples digital_io_blink.py
+# To run the AnalogIO example.This example will run the robot's fans (which are Analog Outputs) from 0 to 100 and back down again in increments of 10.
+$ rosrun baxter_examples analog_io_rampup.py
+```
+
+### Code Walkthrough
+
+```python
+import argparse
+import rospy
+import baxter_interface.digital_io as DIO
+
+def test_interface(io_compoent='left_itb_light_outer'):
+    rospy.loginfo("Blinking Digital output: %s", io_compoent)
+    b = DIO.DigitalIO(io_component)
+    
+    print "Initial state: ", b.state
+    # The io_component is initialized to be as "left_itb_light_outer" by default.
+    b.set_output(True)
+    rospy.sleep(1)
+    print "New state: ", b.state
+    
+    # reset output
+    b.set_output(False)
+    rospy.sleep(1)
+    print "Final state:", b.state
+    # The output of the digital io component is toggled between True and False, and the corresponding output is displayed using the state() function.
+    
+def main():
+    epilog = 
+    arg_fmt = argparse.RawDescriptionHelpFormatter
+    parser = argparse.ArgumentParser(formatter_class=arg_fmt,
+                                     description=main.__doc__,
+                                     epilog=epilog)
+    parser.add_argument(
+    	'-c', '--component', dest='component_id',
+    	default='left_irb_light_outer',
+    	help=('name of Digital IO component to use'
+             ' (default: left_itb_light_outer)')
+    )
+    args = parser.parse_args(rospy.myargv()[1:])
+    
+    rospy.init_node('rskd_digital_io_blink', anoymous=True)
+    is_component = rospy.get_param('-component_id', args.compoent_id)
+    test_interface(io_component)
+if __name__ ='__main__':
+    main()
+```
+
+## Joint Position Example
+
+The Joint Position Control demonstrate how to use position control to move and sense the arm baased on joint angles. Examples include keyboard or joystick based user control of arm angles, along with complementary example programs to record and playback joint positions.
+
+### Keyboard Control 
+
+```
+$ rosrun baxter_examples joint_position_keyboard.py
+```
+
+### Recording Joint Positions
+
+```
+$ rosrun baxter_examples joint_recorder.py -f <filename>
+```
+
+Note: You can open and close the grippers while recording by using Baxter's cuff buttons: Oval=Close, Circle=Open
+
+After you have finished recording, stop the joint_position program using <Ctrl-C>  or hit one of the function 1 or 2 buttons on the game controller (e.g. Select/Select).
+
+### Playback Recordings
+
+```
+$ rosrun baxter_examples joint_position_file_playback.py -f <filename>
+```
+
+### Code Walkthrough
+
+#### Joint Position Recorder
+
+**Interface -** JointRecorder.record()
+
+```python
+import argparse
+import rospy
+import baxter_interface
+from baxter_examples import JointRecorder
+from baxter_interface import CHECK_VERSION
+
+def main():
+    epilog = 
+    arg_fmt = argparse.RawDescriptionHelpFormatter
+    parser = argparse.ArgumentParser(formatter_class=arg_fmt,
+                                     description=main.__doc__,
+                                     epilog=epilog)
+    required = parser.add_argument_group('required arguments')
+    required.add_argument(
+    	'-f', '--file', dest='filename', required=True,
+         help='the file name to record to'
+    )
+    parser.add_argument(
+    	'-r', '--record-rate', type=int, default=100, metavar="RECORDRATE",
+    	help='rate at which to record (default: 100)'
+    )
+    args = parser.parse_args(rospy.myargv()[1:])
+    
+    print("Initializing node... ")
+    rospy.init_node("rsdk_joint_recorder")
+    print("Getting robot state... ")
+    rs = baxter_interface.RobotEnable(CHECK_VERSION)
+    print("Enabling robot... ")
+    rs.enable()
+
+    recorder = JointRecorder(args.filename, args.record_rate)
+    rospy.on_shutdown(recorder.stop)
+
+    print("Recording. Press Ctrl-C to stop.")
+    recorder.record()
+
+    print("\nDone.")
+
+if __name__ == '__main__':
+    main()
+```
+
+#### Joint Position File Playack 
+
+**Interfaces -** 
+
+- Gripper.error()
+- Gripper.reset()
+- Gripper.calibrated()
+- Gripper.type()
+- Gripper.calibrate()
+- Gripper.command_positions(<*double*>)
+- Limb.move_to_joint_positions(<*Joint command*>)
+- Limb.set_joint_positions(<*Joint Command*>)
+
+```python
+import argparse
+import sys
+import rospy
+import baxter_interface
+from baxter_interface import CHECK_VERSION
+
+def clean_line(line, names):
+    """
+    Cleans a single line of recorded joint positions
+    @param line: the line described in a list to process
+    @para names: joint name keys
+    """
+    #convert the line of strings to a float or None
+    line = [try_float(x) for x in line.rstrip().split(',')]
+    #zip the values with the joint names
+    combined = zip(names[1:], line[1:])
+    #take out any tuples theat have a none value
+    cleaned = [x for x in combined if x[1] is not None]
+    #convert it to a dictionary with only valid commands
+    command = dict(cleaned)
+    left_command = dict((key, command[key]) for key in command.keys()
+                         if key[:-2] == 'left_')
+    right_command = dict((key, command[key]) for key in command.keys()
+                         if key[:-2] == 'right_')
+    return (command, left_command, right_command, line)
+
+def map_file(filename, loops=1):
+	left = baxter_interface.Limb('left')    
+    right = baxter_interface.Limb('right')
+    grip_left = baxter_interface.Gripper('left', CHECK_VERSION)
+    grip_right = baxter_interface.Gripper('right', CHECK_VERSION)
+    rate = rospy.RATE(1000)
+    if grip_left.error():
+         grip_left.reset()
+    if grip_right.error():
+         grip_right.reset()
+    if (not grip_left.calibrated() and
+         grip_left.type() != 'custom'):
+         grip_left.calibrate()
+    if (not grip_right.calibrated() and
+         grip_right.type() != 'custom'):
+         grip_right.calibrate()
+#error() method returns if the gripper is in an error state. 
+	print("Playing back: %s" % (filename,))
+    with open(filename, 'r') as f:
+        lines = f.readlines()
+	keys = lines[0].rstrip().split(',')
+    l = 0
+# If specified, repeat the file playback 'loops' number of times
+	while loops < 1 or l < loops:
+        i = 0
+        l += 1
+        print("Moving to start position...")
+        
+        _cmd, lcmd_start, rcmd_start, _raw = clean_line(lines[1], keys)
+        left.move_to_joint_positions(lcmd_start)
+        right.move_to_joint_positions(rcmd_start)
+        start_time = rospy.get_time()
+    	
+        for values in lines[1:]:
+            i += 1
+            loopstr = str(loops) if loops > 0else "forever"
+            sys.stdout.write("\r Record %d of %d, loop %d of %s" %
+                             (i, len(lines) - 1, l, loopstr))
+            sys.stdout.flush()
+            cmd, lcmd, rcmd, values = clean_line(values, keys)
+            while (rospy.get_time() - start_time) < values[0]:
+                if rospy.is_shutdown():
+                    print("\n Aborting - ROS shutdown")
+                    return False
+                if len(lcmd):
+                    left.set_joint_positions(lcmd)
+                if len(rcmd):
+                    right.set_joint_positions(rcmd)
+                if ('left_gripper' in cmd and
+                    grip_left.type() != 'custom'):
+                   grip_left.command_position(cmd['left_gripper'])
+                if ('right_gripper' in cmd and
+                    grip_right.type() != 'custom'):                    
+                 grip_right.command_position(cmd['right_gripper'])
+                rate.sleep()
+        print
+    return True
+def main():
+    epilog = 
+    arg_fmt = argparse.RawDescriptionHelpFormatter
+    parser = argparse.argumentParser(formatter_class=arg_fmt,
+                                     description=main.__doc__,
+                                     epilog=epilog)
+    parser.add_argument(
+        '-f', '--file', metavar='PATH', required=True,
+        help='path to input file'
+    )
+    parser.add_argument(
+        '-l', '--loops', type=int, default=1,
+        help='number of times to loop the input file. 0=infinite.'
+    )
+    args = parser.parse_args(rospy.myargv()[1:])
+    print("Initializing node... ")
+    rospy.init_node("rsdk_joint_position_file_playback")
+    print("Getting robot state... ")
+    rs = baxter_interface.RobotEnable(CHECK_VERSION)
+    init_state = rs.state().enabled
+
+    def clean_shutdown():
+        print("\nExiting example...")
+        if not init_state:
+            print("Disabling robot...")
+            rs.disable()
+    rospy.on_shutdown(clean_shutdown)
+
+    print("Enabling robot... ")
+    rs.enable()
+
+    map_file(args.file, args.loops)
+
+
+if __name__ == '__main__':
+    main()
+```
 
