@@ -1094,3 +1094,84 @@ if __name__ == "__main__":
 
 ## Joint Trajectory Playback 
 
+Enable the robot joint trajectory interface, parse a file created using the joint position recorder example, and send the resulting joint trajectory to the action server.
+
+```
+# Verify that the robot is enabled
+$ rosrun baxter_tools enable_robot.py -e
+# Record a joint position file using the joint_recorder.py
+$ rosrun baxter_examples joint_recorder.py -f <example_file>
+# Move the arms while holding the cuffs.Press any key to exit when done recording.
+# Start joint tarjectory controller.
+$ rosrun baxter_interface joint_trajectory_action_server.py --mode velocity
+# in another RSDK terminal session, run the joint trajectory playback example.
+$ rosrun baxter_examples joint_trajectory_file_playback.py -f <example_file>
+# Both arms will be commanded to repeat the trajectory recorded during the joint position recording.
+```
+
+The difference between this example and the joint_position playback example is that the trajectory controller has the ability to honor the velocities (due to the timestamps) to more accurately repeating the recorded tarjectory.
+
+### Code Walkthrough
+
+```python
+import argparse
+import operator
+import sys
+
+from bisect import bisect
+from copy import copy
+from os import path
+
+import rospy
+
+import actionlib
+
+from control_msgs.msg import (
+	FollowJointTrajectoryAction,
+    FollowJointTrajectoryGoal,
+)
+from trajectory_msgs.msg import (
+	JointTrajectoryPoint,
+)
+
+import baxter_interface
+
+from naxter_interface import CHECK_VERSION
+
+class Trajectory(object):
+    def __init__(self):
+        #create our action server clients
+        self._left_client = actionlib.SimpleActionClient(
+            'robot/limb/left/follow_joint_trajectory',
+            FollowJointTrajectoryAction,
+        )
+        self._right_client = actionlib.SimpleActionClient(
+            'robot/limb/right/follow_joint_trajectory',
+            FollowJointTrajectoryAction,
+        )
+        
+        # verify joint trajectory action servers are available
+        l_server_up = self._left_client.wait_for_server(rospy.Duration(10.0))
+        r_server_up = self._right_client.wait_for_server(rospy.Duration(10.0))
+        if not l_server_up or not r_server_up:
+            msg = ("Action server not available."
+                  	" Verify action server availablity.")
+            rospy.logerr(msg)
+            rospy.signal_shutdown(msg)
+            sys.exit(1)
+            
+            #create our goal request
+            self._l_goal = FollowJointTrajectoryGoal()
+            self._r_goal = FollowJointTrajectoryGoal()
+            
+            #limb interface - current angles needed for start move
+            self._l_arm = baxter_interface.Limb('left')
+            self._r_arm = baxter_interface.Limb('right')
+            
+            #gripper interface - for gripper command playback
+        	self._l_gripper = baxter_interface.Gripper('left', CHECK_VERSION)
+        	self._r_gripper = baxter_interface.Gripper('right', CHECK_VERSION)
+            
+            
+```
+
