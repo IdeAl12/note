@@ -1021,7 +1021,76 @@ class JointSprings(object):
         print("Running. Ctrl-c to quit")
  def _update_parameters(self):
     for joint in self._limb.joint_names():
-        self._springs[joint] = self._dyn.config[joint[-2:] +                                                     '_spring_stiffness']
-        self._damping[joint] = self._dyn.config[joint[-2:] +                                                    '_damping_coefficient'
+        self._springs[joint] = self._dyn.config[joint[-2:] + '_spring_stiffness']                                                   
+        self._damping[joint] = self._dyn.config[joint[-2:] + '_damping_coefficient'                                       
+	def _update_forces(self):
+		"""
+		Calculates the current angular difference between the start position and the current joint position applying the joint torque string forces as defined on the dynamic reconfigure server.
+		"""
+		# get latest spring constants
+		self._update_parameters()
+		# disable cuff interaction
+		self._pub_disable.publish()
+		# calculate current forces
+		for joint in self._start_angles.keys():
+			# spring portion
+			cmd[joint] = self._springs[joint] * (self._start_angles[joint] - 
+			cur_pos[joint])
+			# damping portion
+			cmd[joint] -= self._damping[joint] * cur_vel[joint]
+		# command new joint torques
+		self._limb.set_joint_torques(cmd)
+	def move_to_neutral(self):
+		# Moves the limb to neutral location
+		self._limb.move_to_neutral()
+	def attach_springs(self):
+		"""
+       Switches to joint torque mode and attached joint springs to current joint positions.
+	    """
+	    self._start_angles = self._limb.joint_angles()
+	    
+	    # set control rate
+	    control_rate = rospy.Rate(self._rate)
+	     # for safety purposes, set the control rate command timeout.
+        # if the specified number of command cycles are missed, the robot
+        # will timeout and disable
+        self._limb.set_command_timeout((1.0 / self._rate) * self._missed_cmds)
+        # loop at specified rate commanding new joint torques
+        while not rospy.is_shutdown():
+        	if not self._rs.state().enabled:
+        		rospy.logerr("Joint torque example failed to meet specified control rate timeout.")
+        		break
+        	self._update_forces()
+        	control_rate.sleep()
+       
+       def clean_shutdown(self):
+       print("\nExiting example...")
+       self._limb.exit_control_mode()
+       if not self._init_state and self._rs.state().enabled:
+       		print("disabling robot...")
+       		self._rs.disable()
+       		
+def main():
+	arg_fmt = argparse.RawDescriptionHelpFormatter
+    parser = argparse.ArgumentParser(formatter_class=arg_fmt,                                     description=main.__doc__)
+    parser.add_argument(
+        '-l', '--limb', dest='limb', required=True, choices=['left', 'right'],
+        help='limb on which to attach joint springs'
+    )
+    args = parser.parse_args()
+    print("Initializing node... ")
+    rospy.init_node("rsdk_joint_torque_springs_%s" % (args.limb,))
+    dynamic_cfg_srv = Server(JointSpringsExampleConfig,
+                             lambda config, level: config)
+    js = JointSprings(args.limb, dynamic_cfg_srv)
+    # register shutdown callback
+    rospy.on_shutdown(js.clean_shutdown)
+    js.move_to_neutral()
+    js.attach_springs()
+
+if __name__ == "__main__":
+    main()
 ```
+
+## Joint Trajectory Playback 
 
