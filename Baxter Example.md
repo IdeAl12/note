@@ -595,7 +595,7 @@ if __name__ == "__main__":
 The IK Test example shows the very basics of calling the on-robot Inverse-Kinematics (IK) Service to obtain a joint angles solution for a given endpoint Cartesian point & orientation. Inverse Kinematics is used to convert between the Cartesian (x, y, z, roll, pitch, yaw) sace representation, to actual controllable 7-DOF joint states.
 
 ```
-$ rosrun baxter_examples ik_service_client.pyp -1 left
+$ rosrun baxter_examples ik_service_client.pyp -l left
 ```
 
 ### Code Walkthrough
@@ -1170,8 +1170,126 @@ class Trajectory(object):
             
             #gripper interface - for gripper command playback
         	self._l_gripper = baxter_interface.Gripper('left', CHECK_VERSION)
-        	self._r_gripper = baxter_interface.Gripper('right', CHECK_VERSION)
-            
-            
+        	self._r_gripper = baxter_interface.Gripper('right', CHECK_VERSION)            
 ```
+
+## Joint Velocity Puppet Example
+
+Use puppet as an example of controlling Baxter using joint velocity control.
+
+```
+$ rosrun baxter_examples joint_velocity_puppet.py -l right
+```
+
+Grab the other arm (e.g. the left in this case) at the cuff and move it around using '0G' mode to puppet the arm specified on the command line.
+
+### Code Walkthrough
+
+```python
+import argparse
+import sys
+import rospy
+
+from std_msgs.msg import (
+	UInt16,
+)
+
+import baxter_interface
+from baxter_interface import CHECK_VERSION
+
+class Puppeteer(object):
+    def __init__(self, limb, amplification=1.0):
+        puppet_arm = {"left": "right", "right": "left"}
+        self._control_limb = limb
+        self._puppet_limb = puppet_arm[limb]
+        self._control_arm = baxter_interface.limb.Limb(self._control_limb)
+        self._puppet_arm = baxter_interface.limb.Limb(self._puppet_limb)
+        self._amp = amplification
+        # The side of the limb that would be controlled is captured as _control_limb while the other limb is the _puppet_limb. Two instances of the Limb class for both the limbs are created.
+        print("Getting robot state... ")
+        self._rs = baxter_interface.RobotEnable(CHECK_VERSION)
+        self._init_state = self._rs.state().enabled
+        print("Enabling robot... ")
+        self._rs.enable()
+        
+	def _reset_control_modes(self):
+        rate = rospy.Rate(100)
+        for _ in xrange(100):
+            if rospy.is_shutdown():
+                return False
+            self._control_arm.exit_control_mode()
+            self._puppet_arm.exit_control_mode()
+            rate.sleep()
+        return True
+    # The default controller is the position controller. When the method exit_control_mode() is invoked, the default controllers are switched on from the current controllers.
+    def set_neutral(self):
+        print("Moving to neutral pose...")
+        self._control_arm.move_to_netral()
+        self._puppet_arm.move_to_neutral()
+        
+    def clean_shutdown(self):
+        print("\nExiting example...")
+        self._reset_control_modes()
+        self.set_neutral()
+        if not self._init_state:
+            print("Disabling robot...")
+            self._rs.disable()
+        return True
+    def puppet(self):
+        self.set_neutral()
+        rate = rospy.Rate(100)
+        control_joint_names = self._control_arm.joint_names()
+        puppet_joint_names = self._puppet_arm.joint_names()
+		print ("Puppeting:\n"
+              "  Grab %s cuff and move arm.\n"
+              "  Press Ctrl-C to stop...") % (self._control_limb,)
+        while not rospy.is_shutdown():
+            cmd = {}
+            for idx, name in enumerate(puppet_joint_names):
+                v = self._control_arm.joint_velocity(
+                    control_joint_names[idx])
+                if name[-2:] in ('s0', 'e0', 'w0', 'w2'):
+                    v = -v
+                cmd[name] = v * self._amp
+            self._puppet_arm.set_joint_velocities(cmd)
+            rate.sleep()
+def main():
+	max_gain = 3.0
+    min_gain = 0.1
+    arg_fmt = argparse.RawDescriptionHelpFormatter
+    parser = argparse.ArgumentParser(formatter_class=arg_fmt,
+                                     description=main.__doc__)
+    required = parser.add_argument_group('required arguments')
+    required.add_argument(
+        "-l", "--limb", required=True, choices=['left', 'right'],
+        help="specify the puppeteer limb (the control limb)"
+    )
+    parser.add_argument(
+        "-a", "--amplification", type=float, default=1.0,
+        help=("amplification to apply to the puppeted arm [%g, %g]"
+              % (min_gain, max_gain))
+    )
+    args = parser.parse_args(rospy.myargv()[1:])
+    if (args.amplification < min_gain or max_gain < args.amplification):
+        print("Exiting: Amplification must be between: [%g, %g]" %
+              (min_gain, max_gain))
+        return 1
+
+    print("Initializing node... ")
+    rospy.init_node("rsdk_joint_velocity_puppet")
+
+    puppeteer = Puppeteer(args.limb, args.amplification)
+    rospy.on_shutdown(puppeteer.clean_shutdown)
+    puppeteer.puppet()
+
+    print("Done.")
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main())
+```
+
+## Wobbler Example
+
+
 
