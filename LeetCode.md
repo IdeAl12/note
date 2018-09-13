@@ -137,3 +137,55 @@ class Solution(object):
             return False
 ```
 
+## 字符串转整数（atoi）（简单）
+
+```python
+class Solution(object):
+    def myAtoi(self, str):
+        """
+        :type str: str
+        :rtype: int
+        """
+        if not str:
+            return 0
+        str = str.strip()
+        # 用于移除字符串头尾指定的字符（默认为空格或换行符）或字符序列。
+        if length == 0:
+            return 0  
+        num, flag = 0, 1
+        if str[0] == '-':
+            str = str[1:]
+            flag = -1
+        elif str[0] == '+':
+            str = str[1:]
+        for i in str:
+            if i >= '0' and i <= '9':
+                num = 10*num + ord(i) - ord('0')
+                # ord以一个字符（长度为1的字符串）作为参数，返回对应的 ASCII 数值，或者 Unicode 数值
+            else:
+                break
+        num *= flag
+        num = num if num <= 2147483647 else 2147483647
+        num = num if num >= -2147483648 else -2147483648
+        return num
+```
+
+```python
+# 使用正则表达式 http://www.runoob.com/python/python-reg-expressions.html
+class Solution(object):
+    def myAtoi(self, str):
+        """
+        :type str: str
+        :rtype: int
+        """
+        str = str.strip()
+        try:
+            res = re.search('(^[\+\-]?\d+)', str).group()
+            res = int(res)
+            res = res if res <= 2147483647 else 2147483647
+            res = res if res >= -2147483648 else -2147483648
+        except:
+            res = 0
+        return res
+```
+
