@@ -226,3 +226,93 @@ class Solution(object):
         return count
 ```
 
+## 二叉树的坡度（简单）
+
+```python
+# 递归
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def findTilt(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        def sum_slope(root):
+            if not root:
+                return 0, 0
+            sum_left, slope_left = sum_slope(root.left)
+            sum_right, slope_right = sum_slope(root.right)
+            return sum_left + sum_right + root.val, abs(sum_left - sum_right) + slope_left + slope_right
+        
+        sum, slope = sum_slope(root)
+        return slope
+```
+
+## 搜索插入位置（简单）
+
+```python
+class Solution(object):
+    def searchInsert(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: int
+        """
+        count = 0
+        for i in nums:
+            if target <= i :
+                return count
+            count += 1
+        return count
+```
+
+
+
+```python
+class Solution(object):
+    def searchInsert(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: int
+        """
+        if target < nums[0]:
+            return 0
+        if target > nums[-1]:
+            return len(nums)
+        l = 0
+        r = len(nums) - 1
+        while l <= r:
+            mid = (l + r) / 2
+            if nums[mid] == target or (nums[mid] > target and nums[mid-1] < target):
+                return mid
+            if nums[mid] > target:
+                r = mid -1
+            if nums[mid] < target:
+                l = mid + 1
+```
+
+## 公平的糖果交换（简单）
+
+```python
+class Solution(object):
+    def fairCandySwap(self, A, B):
+        """
+        :type A: List[int]
+        :type B: List[int]
+        :rtype: List[int]
+        """
+        sum_A, sum_B = sum(A), sum(B)
+        diff = (sum_B - sum_A) / 2
+        setB = set(B)
+        for x in A:
+            if  x+diff in setB:
+                return [x, x+diff]
+```
+
