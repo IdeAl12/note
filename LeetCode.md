@@ -189,3 +189,40 @@ class Solution(object):
         return res
 ```
 
+## 转换成小写字母（简单）
+
+```python
+class Solution(object):
+    def toLowerCase(self, str):
+        """
+        :type str: str
+        :rtype: str
+        """
+        ret = ''
+        if str == '':
+            return Null
+        for i in str:
+            if i >= 'A' and i <= 'Z':
+                i = chr(ord(i) + 32)
+            ret += i
+        #str = str.lower()
+        return ret
+```
+
+## 宝石与石头（简单）
+
+```python
+class Solution(object):
+    def numJewelsInStones(self, J, S):
+        """
+        :type J: str
+        :type S: str
+        :rtype: int
+        """
+        count = 0
+        for s in S:
+            if s in J:
+                count += 1
+        return count
+```
+
