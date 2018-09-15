@@ -316,3 +316,66 @@ class Solution(object):
                 return [x, x+diff]
 ```
 
+## 机器人能否返回原点（简单）
+
+```python
+class Solution(object):
+    def judgeCircle(self, moves):
+        """
+        :type moves: str
+        :rtype: bool
+        """
+        r = moves.count('R')
+        # count统计字符串中出现次数
+        l = moves.count('L')
+        u = moves.count('U')
+        d = moves.count('D')
+        # print r, l, u, d
+        if r == l and u == d:
+            return True
+        return False
+```
+
+```python
+class Solution(object):
+    def judgeCircle(self, moves):
+        """
+        :type moves: str
+        :rtype: bool
+        """
+        return (moves.count('R') == moves.count('L')) and (moves.count('U') == moves.count('D'))
+```
+
+## 路径总和（简单）
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def hasPathSum(self, root, sum):
+        """
+        :type root: TreeNode
+        :type sum: int
+        :rtype: bool
+        """
+        def path(root, sum):
+            if not root:
+                return False
+            if sum == root.val and root.left is None and root.right is None:    
+                return True
+            return path(root.left, sum-root.val) or path(root.right, sum-root.val)
+        return path(root, sum)
+    
+#         if root is None:
+#             return False
+#         if sum == root.val and root.left is None and root.right is None:
+#             return True
+#         return self.hasPathSum(root.left, sum-root.val) or self.hasPathSum(root.right, sum-root.val)
+        
+```
+
