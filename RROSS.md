@@ -107,3 +107,167 @@ rosstack是用于提取文件系统上的功能包集信息的命令工具，可
 rosstack [options] <command> [stack]
 ```
 
+3. roscd: roscd = ros + cd
+
+改变路径到相应的功能包或功能包集。roscd仅仅列出在ROS_PACKAGE_PATH目录下的功能包。
+
+用法：
+
+```
+roscd [package[/subdir]]
+```
+
+4. rosls: rosls = ros + ls
+
+罗列相应的功能包、功能包集文件夹的命令。是rosbash套件的一部分。可以通过名称来列表一个文件夹下的文件，而不是根据目录列表。
+
+用法：
+
+```
+rosls [package[/subdir]]
+```
+
+5. roscreate-pkg
+
+创建一个新的ROS功能包
+
+用法：
+
+```
+roscreate-pkg [package_name]
+roscreate-pkg [package_name] [depend1] [depend2] [depend3]
+```
+
+6. roscreate-stack
+
+创建一个新的ROS功能包集，用法类似于5
+
+7. rosdep
+
+安装ROS功能包系统依赖文件
+
+8. rosmake
+
+编译安装一个ROS功能包
+
+用法：
+
+```
+rosmake [package] :编译单个功能包
+rosmake [package1] [package2] [package3]
+```
+
+9. roswtf
+
+显示ROS系统或启动文件的错误或警告信息。
+
+#### ROS核心命令
+
+1. roscore: = ros + core
+
+运行机遇ROS系统必须的节点和程序的集合。为了保证节点能够通信，至少要有一个roscore在运行。roscore当前定义为：
+
+- master
+- parameter server
+- rosout
+
+2. rosmsg/rossrv
+
+显示消息或者服务的数据结构定义
+
+- rosmsg show: 显示在消息中域的定义
+- rosmsg users: 显示使用指定消息的代码
+- rosmsg md5: 显示消息的md5值
+- rosmsg package: 列出制度功能包中的所有消息
+- rosnode packages: 列出带有该消息的所有功能包
+
+3. rosrun
+
+rosrun允许用户不必先改变到相应目录就可以执行在任意一个功能包下的可执行文件。
+
+用法：
+
+```
+rosrun package executable
+e.g. rosrun turlesim turlesim_node
+```
+
+4. rosnode
+
+显示关于ROS节点（包括发布、订阅和连接）的调试信息。
+
+- rosndoe ping：测试到一个节点的可连接性
+- rosnode list：列出活动节点
+- rosnode info：打印节点的信息
+- rosnode machine：列出在特定机器上正在运行的节点
+- rosnode kill：结束一个正在运行的节点  -a
+
+5. roslaunch
+
+通过SSH和在参数服务器上设置参数来局部和远程启动ROS节点。通过调用一个或多个XML配额制文件来完成启动过程。在配置文件中会对每一个要启动的节点进行描述。用法：
+
+- 在不同的借口启动：roslaunch -p 1234 package filename.launch
+- 在功能包内启动文件：roslaunch package filename.launch
+- 在局部节点启动文件：roslaunch --local package filename.launch
+
+6. rostopic
+
+用于显示ROS主题（包括发布、订阅、发布频率和消息）调试信息的工具。
+
+```
+rostopic bw：显示主题的带宽
+rostopic echo [topic]：输出主题信息到屏幕
+rostopic hz [topic]：显示主题发布频率
+rostopic list [/topic]：打印活动主题的信息
+rostopic pub [topic] [msg_type] [args]：发布数据到主题
+rostopic type [topic]：打印主题类型
+rostopic find：通过类型查找主题
+```
+
+7. rosparam
+
+一个获取和设置参数服务器上用YAML编码的文件工具。
+
+```
+rosparam set [param_name] 设置一个参数
+rosparam get [param_name] 获取一个参数
+rosparam load [file_name] [namespace] 从一个文件中调取一个参数
+rosparam dump [file] 写参数到一个文件
+rosparam delete 删除一个参数
+rosparam list 列出参数名称
+```
+
+8. rosservice
+
+用于列表和查询ROS服务器的工具。服务是节点之间相互通信的另一种方式，服务允许节点发送请求和接受响应。
+
+```
+rosservice list 打印活动服务的信息
+rosservice node 打印提供一个服务的节点的名称
+rosservice call [service] [args] 启动给定变量的服务
+rosservice args 列出一个服务的变量
+rosservice type [service] 打印服务类型
+rosservice uri 打印服务ROSRPC uri
+rosservice find 通过服务类型查找服务
+```
+
+### 工具
+
+#### 3D可视化工具：rviz
+
+rviz是ROS中的一个3D可视化工具。
+
+命令参数及用法：
+
+- -h, --help 
+- -d, --display-config <arg> 开始时调用配置文件
+- -t, --target-grame <arg> 设置目标坐标系为<arg>。覆盖在配置文件中指定的目标坐标系。
+- -f, --fixed-frame <arg> 设置固定坐标系为<arg>。覆盖在配置文件中指定的目标坐标系。
+
+启动：
+
+```
+rosrun rviz rviz
+```
+
+![屏幕快照 2018-09-16 下午7.00.28](/Users/lixiang/Desktop/屏幕快照 2018-09-16 下午7.00.28.png)
