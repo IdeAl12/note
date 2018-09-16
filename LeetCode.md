@@ -456,7 +456,7 @@ class Solution(object):
 
 
 
-## 排序链表
+### 排序链表
 
 时间复杂度在O(nlogN)的排序算法是快速排序，堆排序，归并排序。对于数组来说占用的空间复杂度为O(1),O(n),O(n)，但对于链表来说归并排序占用空间为O(1)。
 
@@ -509,6 +509,80 @@ class Solution(object):
             fast = fast.next.next
         return slow
 ```
+
+### 二叉树剪枝
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def pruneTree(self, root):
+        """
+        :type root: TreeNode
+        :rtype: TreeNode
+        """
+        if root == None:
+            return None
+        # print root.val
+        root.left = self.pruneTree(root.left)
+        root.right = self.pruneTree(root.right)
+        # 先进性递归
+        if root.left == None and root.right == None :
+            if root.val==0:
+                return None
+            else:
+                return root
+        return root
+```
+
+### 旋转图像
+
+```python
+class Solution(object):
+    def rotate(self, matrix):
+        """
+        :type matrix: List[List[int]]
+        :rtype: void Do not return anything, modify matrix in-place instead.
+        """
+        for i in range(len(matrix)-1):
+            for j in range(i,len(matrix)-1-i):
+                tmp1 = matrix[i][j]
+                tmp2 = matrix[j][len(matrix)-1-i]
+                tmp3 = matrix[len(matrix)-1-i][len(matrix)-1-j]
+                tmp4 = matrix[len(matrix)-1-j][i]
+                matrix[j][len(matrix)-1-i] = tmp1
+                matrix[len(matrix)-1-i][len(matrix)-1-j] = tmp2
+                matrix[len(matrix)-1-j][i] = tmp3
+                matrix[i][j] = tmp4
+                # print tmp1, tmp2, tmp3, tmp4
+```
+
+```python
+class Solution(object):
+    def rotate(self, matrix):
+        """
+        :type matrix: List[List[int]]
+        :rtype: void Do not return anything, modify matrix in-place instead.
+        """
+   
+        for i in range(len(matrix)/2):
+            t = matrix[i]
+            matrix[i] = matrix[len(matrix)-1-i]
+            matrix[len(matrix)-1-i] = t
+        l = len(matrix)
+        for i in range(0,l):
+            for j in range(i+1,l):
+                t = matrix[i][j]
+                matrix[i][j] = matrix[j][i]
+                matrix[j][i] = t
+```
+
+
 
 ## 竞赛
 
