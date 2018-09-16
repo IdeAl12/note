@@ -422,6 +422,40 @@ class Solution(object):
         return ret
 ```
 
+### 保持城市天际线
+
+```python
+class Solution(object):
+    def maxIncreaseKeepingSkyline(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        topdown = []
+        leri = []
+        # print len(grid)
+        for i in range(len(grid[0])):
+            leri.append(max(grid[i]))
+        # print leri
+        # for i in range(len(grid)):
+        #     m = 0
+        #     for j in range(len(grid[0])):
+        #         if grid[j][i]>m:
+        #             m = grid[j][i]
+        #     topdown.append(m)
+        for j in range(len(grid)):
+            topdown.append(max([i[j] for i in grid ]))
+        # print topdown
+        sum = 0
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                sum += min(topdown[i], leri[j]) - grid[i][j]
+        return sum
+        
+```
+
+
+
 ## 排序链表
 
 时间复杂度在O(nlogN)的排序算法是快速排序，堆排序，归并排序。对于数组来说占用的空间复杂度为O(1),O(n),O(n)，但对于链表来说归并排序占用空间为O(1)。
