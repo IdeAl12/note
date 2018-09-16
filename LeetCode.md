@@ -2,7 +2,8 @@
 
 # LeetCode
 
-## 两数之和（简单）
+## 简单
+### 两数之和
 
 ```python
 class Solution(object):
@@ -38,51 +39,7 @@ int* twoSum(int* nums, int numsSize, int target) {
 }
 ```
 
-## 两数相加（中等）
-
-```python
-# Definition for singly-linked list.
-# class ListNode(object):
-#     def __init__(self, x):
-#         self.val = x
-#         self.next = None
-
-class Solution(object):
-    def addTwoNumbers(self, l1, l2):
-        """
-        :type l1: ListNode
-        :type l2: ListNode
-        :rtype: ListNode
-        """
-        a1 = 0
-        a2 = 0
-        m1 = 1
-        m2 = 1
-        
-        while l1:
-            a1 = a1 + l1.val * m1
-            m1 *= 10
-            l1 = l1.next
-        while l2:
-            a2 = a2 + l2.val * m2
-            m2 *= 10
-            l2 = l2.next
-        r = a1 + a2
-        ret = ListNode(0)
-        head = ret
-        tail = ListNode(0)
-        while 1:
-            head.val = r%10
-            head.next = ListNode(0)
-            r /= 10
-            if r == 0:
-                head.next = None
-                break
-            head = head.next
-        return ret
-```
-
-## 整数翻转（简单）
+### 整数翻转
 
 ```python
 class Solution(object):
@@ -106,7 +63,7 @@ class Solution(object):
         return ret
 ```
 
-## 回文数（简单）
+### 回文数
 
 ```python
 class Solution(object):
@@ -137,7 +94,7 @@ class Solution(object):
             return False
 ```
 
-## 字符串转整数（atoi）（简单）
+### 字符串转整数（atoi）
 
 ```python
 class Solution(object):
@@ -189,7 +146,7 @@ class Solution(object):
         return res
 ```
 
-## 转换成小写字母（简单）
+### 转换成小写字母
 
 ```python
 class Solution(object):
@@ -209,7 +166,7 @@ class Solution(object):
         return ret
 ```
 
-## 宝石与石头（简单）
+### 宝石与石头
 
 ```python
 class Solution(object):
@@ -226,7 +183,7 @@ class Solution(object):
         return count
 ```
 
-## 二叉树的坡度（简单）
+### 二叉树的坡度
 
 ```python
 # 递归
@@ -254,7 +211,7 @@ class Solution(object):
         return slope
 ```
 
-## 搜索插入位置（简单）
+### 搜索插入位置
 
 ```python
 class Solution(object):
@@ -298,7 +255,7 @@ class Solution(object):
                 l = mid + 1
 ```
 
-## 公平的糖果交换（简单）
+### 公平的糖果交换
 
 ```python
 class Solution(object):
@@ -316,7 +273,7 @@ class Solution(object):
                 return [x, x+diff]
 ```
 
-## 机器人能否返回原点（简单）
+### 机器人能否返回原点
 
 ```python
 class Solution(object):
@@ -346,7 +303,7 @@ class Solution(object):
         return (moves.count('R') == moves.count('L')) and (moves.count('U') == moves.count('D'))
 ```
 
-## 路径总和（简单）
+### 路径总和
 
 ```python
 # Definition for a binary tree node.
@@ -377,5 +334,145 @@ class Solution(object):
 #             return True
 #         return self.hasPathSum(root.left, sum-root.val) or self.hasPathSum(root.right, sum-root.val)
         
+```
+
+### 翻转图像
+
+```python
+class Solution(object):
+    def flipAndInvertImage(self, A):
+        """
+        :type A: List[List[int]]
+        :rtype: List[List[int]]
+        """
+        for i in range(len(A)):
+            for j in range(len(A)/2):
+                tmp = A[i][len(A)-1-j] 
+                A[i][len(A)-1-j] = A[i][j]
+                A[i][j] = tmp
+        
+        for i in range(len(A)):
+            for j in range(len(A)):
+                if A[i][j] == 1:
+                    A[i][j] = 0 
+                else:
+                    A[i][j] = 1      
+        return A
+```
+
+```python
+class Solution(object):
+    def flipAndInvertImage(self, A):
+        """
+        :type A: List[List[int]]
+        :rtype: List[List[int]]
+        """        
+        for i in range(len(A)):
+            A[i].reverse()
+            for j in range(len(A)):
+                if A[i][j] == 1:
+                    A[i][j] = 0 
+                else:
+                    A[i][j] = 1
+        return A
+```
+
+## 中等
+### 两数相加
+
+```python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def addTwoNumbers(self, l1, l2):
+        """
+        :type l1: ListNode
+        :type l2: ListNode
+        :rtype: ListNode
+        """
+        a1 = 0
+        a2 = 0
+        m1 = 1
+        m2 = 1
+        
+        while l1:
+            a1 = a1 + l1.val * m1
+            m1 *= 10
+            l1 = l1.next
+        while l2:
+            a2 = a2 + l2.val * m2
+            m2 *= 10
+            l2 = l2.next
+        r = a1 + a2
+        ret = ListNode(0)
+        head = ret
+        tail = ListNode(0)
+        while 1:
+            head.val = r%10
+            head.next = ListNode(0)
+            r /= 10
+            if r == 0:
+                head.next = None
+                break
+            head = head.next
+        return ret
+```
+
+## 排序链表
+
+时间复杂度在O(nlogN)的排序算法是快速排序，堆排序，归并排序。对于数组来说占用的空间复杂度为O(1),O(n),O(n)，但对于链表来说归并排序占用空间为O(1)。
+
+快排的最坏时间复杂度是O(n^2)，平均时间复杂度为O(nlogn)。
+
+```python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def sortList(self, head):
+        """
+        :type head: ListNode
+        :rtype: ListNode
+        """
+        if head is None or head.next is None:
+            return head
+        mid = self.get_mid(head)
+        l = head
+        r = mid.next
+        mid.next = None
+        return self.merge(self.sortList(l), self.sortList(r))
+    
+    def merge(self, p, q):
+        tmp = ListNode(0)
+        h = tmp
+        while p and q:
+            if p.val < q.val:
+                h.next = p
+                p = p.next
+            else:
+                h.next = q
+                q = q.next
+            h = h.next
+        if p:
+            h.next = p
+        if q:
+            h.next = q    
+        return tmp.next
+        
+    def get_mid(self, node):
+        if node is None:
+            return node
+        fast = slow = node
+        while fast.next and fast.next.next:
+            slow = slow.next
+            fast = fast.next.next
+        return slow
 ```
 
