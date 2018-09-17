@@ -377,7 +377,148 @@ class Solution(object):
         return A
 ```
 
+### 合并二叉树
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def mergeTrees(self, t1, t2):
+        """
+        :type t1: TreeNode
+        :type t2: TreeNode
+        :rtype: TreeNode
+        """
+        if t1 == None and t2 == None:
+            return None
+        if t1 == None:
+            return t2
+        if t2 == None:
+            return t1
+        t1.val += t2.val
+        t1.left = self.mergeTrees(t1.left, t2.left)
+        t1.right = self.mergeTrees(t1.right, t2.right)
+        return t1
+```
+
+### 找到所有数组中消失的数字
+
+```python
+class Solution(object):
+    def findDisappearedNumbers(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[int]
+        """
+        ret = []
+        num = set(nums)
+        # set() 函数创建一个无序不重复元素集，可进行关系测试，删除重复数据，还可以计算交集、差集、并集等。
+        for i in range(len(nums)):
+            if i+1 not in num:
+                ret.append(i+1)
+        return ret
+        # 一行代码
+        # return list(set(range(1, len(nums)+1)) - set(nums))
+```
+
+### 删除排序链表中的重复元素
+
+```python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def deleteDuplicates(self, head):
+        """
+        :type head: ListNode
+        :rtype: ListNode
+        """
+        if head == None:
+            return head
+        lis = head
+        while lis.next:
+            if lis.val == lis.next.val:
+                lis.next = lis.next.next
+            else:
+                lis =lis.next
+        return head
+```
+
+### Fizz Buzz
+
+```python
+class Solution(object):
+    def fizzBuzz(self, n):
+        """
+        :type n: int
+        :rtype: List[str]
+        """
+        if n < 1:
+            return []
+        ret = []
+        for i in range(1,n+1):
+            if i%3 == 0 and i%5 == 0:
+                ret.append("FizzBuzz")
+                # continue
+            elif i%3 == 0:
+                ret.append("Fizz")
+                # continue
+            elif i%5 == 0:
+                ret.append("Buzz")
+                # continue
+            else:
+                ret.append(str(i))
+        return ret
+```
+
+### 错误的集合
+
+```python
+class Solution(object):
+    def findErrorNums(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[int]
+        """
+        ret = []
+        nums = sorted(nums)
+        for i in range(1,len(nums)):
+            if nums[i] == nums[i-1]:
+                break
+        ret.append(nums[i])
+        # print list(set(range(1,len(nums)+1))-set(nums))
+        ret += list(set(range(1,len(nums)+1))-set(nums))
+        return ret
+```
+
+```python
+class Solution(object):
+    def findErrorNums(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[int]
+        """
+        res=[]
+        sum1=sum(set(nums))
+        sum2=(1+len(nums))*len(nums)//2
+        sum3=sum(nums)
+        res.append(sum3-sum1)
+        res.append(sum2-sum1)
+        return res
+```
+
+
+
 ## 中等
+
 ### 两数相加
 
 ```python
@@ -580,6 +721,30 @@ class Solution(object):
                 t = matrix[i][j]
                 matrix[i][j] = matrix[j][i]
                 matrix[j][i] = t
+```
+
+### 最大二叉树
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def constructMaximumBinaryTree(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: TreeNode
+        """
+        if len(nums) == 0:
+            return None
+        tree = TreeNode(max(nums))
+        tree.left = self.constructMaximumBinaryTree(nums[:nums.index(tree.val)])
+        tree.right = self.constructMaximumBinaryTree(nums[nums.index(tree.val)+1:])
+        return tree
 ```
 
 
