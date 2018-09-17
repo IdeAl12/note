@@ -314,3 +314,77 @@ rviz使用tf变换系统来实现不同坐标系下数据变换。
 2. 选择工具（S）
 3. 2D导航目标（G）在地面上点击定位位置并拖拽选中的方向即可
 4. 2D位姿估计（P）
+
+##### 时间面板
+
+允许用户查看系统已经运行多久或者实际运行时间是多少。还允许用户重设可视化工具内部实际状态。
+
+##### 插件
+
+rviz设置为新的显示项以插件形式添加。内建的显示项已经通过缺省插件形式加载。可以通过用户界面来装载/卸载插件。
+
+#### 传感器数据记录与可视化工具：rosbag和rxbag
+
+##### rosbag
+
+rosbag是一个用于记录和回放ROS主题的工具集合。目的是提供高效的执行，避免消息的反序列化和重序列化。
+
+rosbag可以实现记录消息，从一个或多个消息记录包重新发布消息，总结消息记录包的内容，检查消息定义，基于python表达式过滤消息记录包消息，压缩及解压缩记录包，以及重建消息记录包索引等功能。
+
+命令列表：
+
+- record：记录带有特定主体的消息记录包文件。
+- info：总结消息记录包的内容。
+- play：回放一个或多个消息记录包内容。
+- check：确定消息记录包是可回放的
+- fix：修复消息记录包中的消息。
+- filter：使用python表达式转换消息记录包文件
+- compress：压缩消息记录包文件
+- decompress：解压缩消息记录包
+- reindex：重建消息记录包索引
+
+#### rxbag
+
+rbag是一个记录和管理消息记录包文件的应用工具。
+
+用法： rxbag bag_file.bag
+
+#### 画图工具：rxplot
+
+rxplot是rxtools功能包中用matplotlib画出正在使用一个或多个ROS主题域的工具
+
+用法：rxplot /topic1/field1 /topic2/field2
+
+#### 系统可视化工具：rxgraph
+
+rxgraph是以图形形式显示当前正在运行的节点和主题的工具。
+
+用法：rxgraph [ options]
+
+#### rxconsole
+
+rxconsole是rxtools包中一个消息查看工具。显示消息被发布到rosout，rxconsole根据事件记录所发布的消息。
+
+#### tf命令
+
+1. tf echo
+
+用于打印在源坐标系和目标坐标系传递信息的工具
+
+用法：
+
+```
+rosrun tf tf_echo <source_frame> <target_frame>
+```
+
+2. view_frames
+
+可视化完整坐标树的工具。
+
+用法：
+
+```
+rosrun tf view_frames
+evince frame.pdf
+```
+
