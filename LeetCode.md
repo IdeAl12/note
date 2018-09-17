@@ -515,6 +515,118 @@ class Solution(object):
         return res
 ```
 
+### 翻转二叉树
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def invertTree(self, root):
+        """
+        :type root: TreeNode
+        :rtype: TreeNode
+        """
+        if root is None:
+            return None
+        tmp = root.left
+        root.left = root.right
+        root.right = tmp
+        root.left = self.invertTree(root.left)
+        root.right = self.invertTree(root.right)
+        return root
+```
+
+### 二叉树的最大深度
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def maxDepth(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        if root == None:
+            return 0
+        return 1 + max(self.maxDepth(root.left) , self.maxDepth(root.right))
+```
+
+### 修剪二叉树
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def trimBST(self, root, L, R):
+        """
+        :type root: TreeNode
+        :type L: int
+        :type R: int
+        :rtype: TreeNode
+        """
+        if root == None:
+            return None
+        root.left = self.trimBST(root.left, L, R)
+        root.right = self.trimBST(root.right, L, R)
+        if root.val < L or root.val > R:
+            if root.left == None:
+                root = root.right
+                return root
+            if root.right == None:
+                root = root.left
+                return root
+        return root
+```
+
+### 数字的补数
+
+```python
+class Solution(object):
+    def findComplement(self, num):
+        """
+        :type num: int
+        :rtype: int
+        """
+        # print bin(num)[2:]
+        # print int("10",2)
+        n = str(bin(num)[2:])
+        ret = ""
+        for i in range(len(n)):
+            if n[i] == '1':
+                ret +='0'
+            else:
+                ret += '1'
+        return int(ret,2)
+```
+
+### 翻转字符串
+
+```python
+class Solution(object):
+    def reverseString(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        return s[::-1]        
+```
+
 
 
 ## 中等
@@ -745,6 +857,56 @@ class Solution(object):
         tree.left = self.constructMaximumBinaryTree(nums[:nums.index(tree.val)])
         tree.right = self.constructMaximumBinaryTree(nums[nums.index(tree.val)+1:])
         return tree
+```
+
+### 螺旋矩阵II  （不会）
+
+```python
+class Solution(object):
+    def generateMatrix(self, n):
+        """
+        :type n: int
+        :rtype: List[List[int]]
+        """
+        direction=0
+        
+        up=left=0
+        down,right=n-1,n-1
+        # 创建二维list
+        matrix=[[0 for i in range(n)] for j in range(n)]
+        
+        #生成器
+        nums=range(1,n**2+1)
+        item=0
+        #向ans里按螺旋顺序添加
+        while up<=down and left<=right:
+            
+            if direction==0:
+                for i in range(left,right+1):
+                    #up在这里表示填充的这一行的行数
+                    matrix[up][i]=nums[item]
+                    item+=1
+                up+=1
+            elif direction==1:
+                for i in range(up,down+1):
+                    #right表示填充的这一行的列数
+                    matrix[i][right]=nums[item]
+                    item+=1
+                right-=1
+            elif direction==2:
+                for i in range(left,right+1)[::-1]:
+                    #down表示填充的这一行的行数
+                    matrix[down][i]=nums[item]
+                    item+=1
+                down-=1
+            else:
+                for i in range(up,down+1)[::-1]:
+                    #left表示填充这一行的列数
+                    matrix[i][left]=nums[item]
+                    item+=1
+                left+=1
+            direction=(direction+1)%4
+        return matrix        
 ```
 
 
