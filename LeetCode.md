@@ -627,6 +627,79 @@ class Solution(object):
         return s[::-1]        
 ```
 
+### Nim游戏
+
+```python
+class Solution(object):
+    def canWinNim(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        return n%4 != 0
+```
+
+### 最后一个单词的长度
+
+```python
+class Solution(object):
+    def lengthOfLastWord(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        s = s[::-1]
+        s = s.lstrip()
+        count = 0
+        for i in s:
+            if i == ' ':
+                break
+            count += 1
+        return count
+```
+
+```python
+class Solution(object):
+    def lengthOfLastWord(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        a = s.strip().split(' ')
+        if len(a):
+            return len(a[-1])
+        else:
+            return 0
+```
+
+### 最长公共前缀
+
+```python
+class Solution(object):
+    def longestCommonPrefix(self, strs):
+        """
+        :type strs: List[str]
+        :rtype: str
+        """
+        ret = ""
+        strs = sorted(strs,key = lambda i:len(i),reverse=False)
+        if strs == []:
+            return ""
+        if len(strs) == 1:
+            return strs[0]
+        for i in range(len(strs[0])):
+            flag = 1
+            for j in range(1, len(strs)):
+                if strs[0][i] != strs[j][i]:
+                    flag *= -1
+                    break
+            if flag == 1:
+                ret += strs[0][i]
+            if flag == -1:
+                break
+        return ret
+```
+
 
 
 ## 中等
@@ -907,6 +980,47 @@ class Solution(object):
                 left+=1
             direction=(direction+1)%4
         return matrix        
+```
+
+### 子集
+
+```python
+
+class Solution(object):
+    def subsets(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[List[int]]
+        """
+        global out,s
+        s = []
+        out = [[]]
+        def dfs(i):
+            global out,s
+            for j in range(i,len(nums)):
+                s.append(nums[j])
+                out.append(s[:])
+                dfs(j+1)
+                s = s[:len(s)-1] 
+        dfs(0)
+        return out
+```
+
+```python
+
+class Solution(object):
+    def subsets(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[List[int]]
+        """
+        res = [[]]
+        for num in nums :
+            for temp in res[:] :
+                x = temp[:]
+                x.append(num)
+                res.append(x)                
+        return res
 ```
 
 
