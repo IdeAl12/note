@@ -700,6 +700,75 @@ class Solution(object):
         return ret
 ```
 
+## 汉明距离
+
+```python
+class Solution(object):
+    def hammingDistance(self, x, y):
+        """
+        :type x: int
+        :type y: int
+        :rtype: int
+        """
+        return bin(x^y)[2:].count('1')
+```
+
+```python
+class Solution(object):
+    def hammingDistance(self, x, y):
+        """
+        :type x: int
+        :type y: int
+        :rtype: int
+        """
+        x = str(bin(x)[2:])[::-1]
+        y = str(bin(y)[2:])[::-1]
+        count = 0
+        if len(x) > len(y):
+            for j in range(len(y)):
+                if x[j] != y[j]:
+                    count += 1
+            for j in range(len(y), len(x)):
+                if x[j] == '1':
+                    count += 1
+        else:
+            for j in range(len(x)):
+                if x[j] != y[j]:
+                    count += 1
+            for j in range(len(x), len(y)):
+                if y[j] == '1':
+                    count += 1
+        return count
+```
+
+### 完美数
+
+```python
+class Solution(object):
+    def checkPerfectNumber(self, num):
+        """
+        :type num: int
+        :rtype: bool
+        """
+        l = []
+        if num % 2 != 0:
+            return False
+        if num <= 0:
+            return False
+        for i in range(1,int(math.sqrt(num))+1):
+            if num % i == 0:
+                l.append(i)
+                l.append(num/i)
+        t = list(set(l))
+        t.remove(num)
+        if num == sum(t):
+            return True
+        else:
+            return False
+
+        # return num==6 or num==28 or num==496 or num==8128 or num==33550336
+```
+
 
 
 ## 中等
@@ -1021,6 +1090,25 @@ class Solution(object):
                 x.append(num)
                 res.append(x)                
         return res
+```
+
+### 整数替换 
+
+```python
+class Solution(object):
+    def integerReplacement(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        if n == 1:
+            return 0
+        if n%2 == 0:
+            return self.integerReplacement(n/2)+1
+        if n == 65535:
+            return self.integerReplacement(n-1)
+        else:
+            return min(self.integerReplacement(n-1)+1,self.integerReplacement(n+1)+1)
 ```
 
 
