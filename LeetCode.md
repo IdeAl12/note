@@ -838,6 +838,45 @@ class Solution(object):
         return letters[0]
 ```
 
+### 山脉数组的峰顶索引
+
+```python
+class Solution(object):
+    def peakIndexInMountainArray(self, A):
+        """
+        :type A: List[int]
+        :rtype: int
+        """
+        # i = max(A)
+        return A.index(max(A))
+```
+
+### 自除数
+
+```python
+class Solution(object):
+    def selfDividingNumbers(self, left, right):
+        """
+        :type left: int
+        :type right: int
+        :rtype: List[int]
+        """
+        result = []
+        for i in range(left,right+1):
+            num = i
+            while i > 0:
+                k = i%10
+                if k == 0:
+                    break
+                if num%k == 0:
+                    i = i//10
+                else:
+                    break
+            if i == 0:
+                result.append(num)
+        return result
+```
+
 
 
 ## 中等
