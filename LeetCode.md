@@ -700,7 +700,7 @@ class Solution(object):
         return ret
 ```
 
-## 汉明距离
+### 汉明距离
 
 ```python
 class Solution(object):
@@ -767,6 +767,58 @@ class Solution(object):
             return False
 
         # return num==6 or num==28 or num==496 or num==8128 or num==33550336
+```
+
+### 有效的完全平方数
+
+```python
+class Solution(object):
+    def isPerfectSquare(self, num):
+        """
+        :type num: int
+        :rtype: bool
+        """
+        return num**0.5 ==int(num**0.5)
+```
+
+### Excel列表名称
+
+```python
+class Solution(object):
+    def convertToTitle(self, n):
+        """
+        :type n: int
+        :rtype: str
+        """
+        if n <= 0:
+            return ""
+        if 1<=n<=26:
+            return chr(n-1+ord('A'))
+        # ord() convert char to int
+        # chr() convert int to char
+        t = divmod(n,26)
+        if t[1] == 0:
+            return self.convertToTitle(t[0]-1) + 'Z'
+        return self.convertToTitle(t[0]) + self.convertToTitle(t[1])
+```
+
+```python
+
+from collections import deque
+class Solution(object):
+    def convertToTitle(self, n):
+        """
+        :type n: int
+        :rtype: str
+        """
+
+        column  = deque()
+
+        while n>0:
+            n,output = divmod(n-1,26)
+            column.appendleft(output)
+
+        return "".join([chr(i+ord('A')) for i in column])
 ```
 
 
@@ -1109,6 +1161,27 @@ class Solution(object):
             return self.integerReplacement(n-1)
         else:
             return min(self.integerReplacement(n-1)+1,self.integerReplacement(n+1)+1)
+```
+
+### 逃脱阻碍者
+
+```python
+class Solution(object):
+    def escapeGhosts(self, ghosts, target):
+        """
+        :type ghosts: List[List[int]]
+        :type target: List[int]
+        :rtype: bool
+        """
+        min = 100000
+        for ghost in ghosts:
+            tmp = abs(target[0] - ghost[0]) + abs(target[1] - ghost[1])
+            if min > tmp:
+                min = tmp
+        
+        if min < abs(target[0])+abs(target[1]):
+            return False
+        return True
 ```
 
 
