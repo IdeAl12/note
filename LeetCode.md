@@ -821,6 +821,23 @@ class Solution(object):
         return "".join([chr(i+ord('A')) for i in column])
 ```
 
+### 寻找比目标字母大的最小字母
+
+```python
+class Solution(object):
+    def nextGreatestLetter(self, letters, target):
+        """
+        :type letters: List[str]
+        :type target: str
+        :rtype: str
+        """
+        letters = sorted(letters)
+        for i in letters:
+            if i>target:
+                return i
+        return letters[0]
+```
+
 
 
 ## 中等
