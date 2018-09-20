@@ -877,6 +877,73 @@ class Solution(object):
         return result
 ```
 
+### 检测大写字母
+
+```python
+class Solution(object):
+    def detectCapitalUse(self, word):
+        """
+        :type word: str
+        :rtype: bool
+        """
+        flag = 0
+        if len(word) == 1:
+            return True
+        if 'A'<=word[0]<='Z' and 'a'<=word[1]<='z':
+            for i in range(2, len(word)):
+                if 'A'<=word[i]<='Z':
+                    return False
+        elif 'A'<=word[0]<='Z' and 'A'<=word[1]<='Z':
+            for i in range(2, len(word)):
+                if 'a'<=word[i]<='z':
+                    return False
+        elif 'a'<=word[0]<='z':
+            for i in range(1, len(word)):
+                if 'A'<=word[i]<='Z':
+                    return False
+        return True
+```
+
+### Excel表列序号
+
+```python
+class Solution(object):
+    def titleToNumber(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        ret = 0
+        s = list(s[::-1])
+        for i in range(len(s)):
+            ret += (ord(s[i])-ord('A')+1)*(26**i)
+        return ret 
+```
+
+### 有效的括号
+
+```python
+class Solution(object):
+    def isValid(self, s):
+        """
+        :type s: str
+        :rtype: bool
+        """
+        if len(s) % 2 == 1:
+            return False
+
+        d = {'{': '}', '[': ']', '(': ')'}
+        stack = []
+        for i in s:
+            # in stack
+            if i in d:
+                stack.append(i)
+            else:
+                if not stack or d[stack.pop()] != i:
+                    return False
+        return stack ==[]
+```
+
 
 
 ## 中等
