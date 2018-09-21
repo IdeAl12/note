@@ -944,6 +944,82 @@ class Solution(object):
         return stack ==[]
 ```
 
+### 唯一摩尔斯密码词
+
+```python
+class Solution(object):
+    def uniqueMorseRepresentations(self, words):
+        """
+        :type words: List[str]
+        :rtype: int
+        """
+        dir = [".-","-...","-.-.","-..",".","..-.","--.","....","..",".---","-.-",".-..","--","-.","---",".--.","--.-",".-.","...","-","..-","...-",".--","-..-","-.--","--.."]
+        # print len(dir)
+        trans = []
+        for i in words:
+            tmp = ''
+            for j in i:
+                tmp += dir[ord(j)-ord('a')]
+            trans.append(tmp)
+        return len(set(trans))
+```
+
+### 键盘行
+
+```python
+class Solution(object):
+    def findWords(self, words):
+        """
+        :type words: List[str]
+        :rtype: List[str]
+        """
+        fir = "qwertyuiopQWERTYUIOP"
+        sec = "asdfghjklASDFGHJKL"
+        thi = "zxcvbnmZXCVBNM"
+        ret = []
+        for i in words:
+            flag = 1
+            if fir.find(i[0]) != -1:
+                for j in i[1:]:
+                    if fir.find(j) == -1:
+                        flag = 0
+                        break
+                if flag:
+                    ret.append(i)
+            elif sec.find(i[0]) != -1:
+                for j in i[1:]:
+                    if sec.find(j) == -1:
+                        flag = 0
+                        break
+                if flag:
+                    ret.append(i)
+            elif thi.find(i[0]) != -1:
+                for j in i[1:]:
+                    if thi.find(j) == -1:
+                        flag = 0
+                        break
+                if flag:
+                    ret.append(i)
+        return ret        
+```
+
+```python
+class Solution(object):
+    def findWords(self, words):
+        """
+        :type words: List[str]
+        :rtype: List[str]
+        """
+        ans=[]
+        keyset=['qwertyuiop','asdfghjkl','zxcvbnm']
+        for keys in keyset:
+            for word in words:
+                line=set(word.lower())
+                if line.issubset(set(keys)):
+                    ans.append(word)
+        return ans
+```
+
 
 
 ## 中等
