@@ -128,3 +128,22 @@ A model descibed in the SDF using XML can be loaded by each of these physics eng
 
 The rendering library uses OGRE to provide a simple interface for rendering 3D scenes to both the GUI and sensor libraries. It includes lighting, textures, and sky simulation. It is possible to write plugins for the rendering engine.
 
+#### Sensor Generation
+
+- Dependencies: Rendering Library, Physics Library
+- External API: Provide functionality to initialize and run a set of sensors
+- Internal API: TBD
+
+The sensor generation library implements all the various types of sensors, listens to world state updates from a physics simulator and produces output specified by the instantiated sensors.
+
+#### GUI
+
+- Dependencies: Rendering Library, QT
+- External API: None
+- Internal API: None
+
+The GUI library uses Qt to create graphical widgets for users to interact with the simulation. 
+
+#### Plugins
+
+The physics, sensor, and rendering libraries support plugins. These plugins users with access to the respective libraries without using the communication system.
