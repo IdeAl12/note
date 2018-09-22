@@ -1020,6 +1020,66 @@ class Solution(object):
         return ans
 ```
 
+### 反转字符串中的单词III
+
+```python
+class Solution(object):
+    def reverseWords(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        s = s.split()
+        return ' '.join([i[::-1] for i in s])
+```
+
+### 转置矩阵
+
+```python
+class Solution(object):
+    def transpose(self, A):
+        """
+        :type A: List[List[int]]
+        :rtype: List[List[int]]
+        """
+        ret = [[0 for _ in range(len(A))] for _ in range(len(A[0]))]
+        for i in range(len(A)):
+            for j in range(len(A[0])):
+                ret[j][i] = A[i][j]
+        return ret
+```
+
+### 各位相加
+
+```python
+class Solution(object):
+    def addDigits(self, num):
+        """
+        :type num: int
+        :rtype: int
+        """
+        if num/10 == 0:
+            return num
+        n = 0
+        while num/10 != 0:
+            n += num%10
+            num /= 10
+        n += num%10
+        return self.addDigits(n)
+```
+
+```python
+# 不用递归
+class Solution(object):
+    def addDigits(self, num):
+        """
+        :type num: int
+        :rtype: int
+        """
+        s = num % 9
+        return s if num==0 or s!=0 else 9  
+```
+
 
 
 ## 中等
