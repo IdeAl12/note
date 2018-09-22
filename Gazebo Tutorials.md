@@ -249,3 +249,348 @@ Also make sure you add the model directory to the **CMakeLists.txt** file.
 
 The model.config file provides information necessary to pick the pproper SDF file, information on authorship of the model, and a textual description of the model.
 
+The model.config file indicates that the simulator's definition of the model (i.e., visual, interial, kinematic, and geometric properties, among others) , is located in model.sdf.
+
+### Adding the directory (files) to the repository
+
+```
+hg add mymodel
+or:
+hg add mymodel/model.config
+hg add mymodel/model.sdf
+```
+
+## Make a model
+
+SDF Models can range from simple shapes to complex robots. It refers to <model> SDF tag, and is  essentially a collection of links, joints, collision objects, visuals, and plugins. 
+
+### Components of a SDF Models
+
+Links: A link contains the physical properties of one body of the model. Each link may contain many collision and visual elements. Try to reduce the number of links in your models in order to improve performance and stability.
+
+- Collision: A collision element encapsulates a geometry that is used to collision checking. This can be a simple shape or a triangle mesh. A link may contain many collision elements.
+- visual: A visual element is used to visualize parts of a link. A link may contain 0 or more visual elements.
+- Intertial: The inertial element describes the dynamic properties of the link, suck as mass and rotational intertia matrix.
+- Sensor: A sensor collects data from the world for uuuse in plugins.
+- Light: A light element describes a light source attached to a link.
+
+Joints: A joint connects two links. A parent and child relationship is established along with other parameters such as axis of rotation and joint limits.
+
+Plugins: A plugin is a shared library created by a third party to control a model.
+
+### Building a Model
+
+#### Step 1 : Collect meshes
+
+This step involves gathering all the necessary 3D mesh files that are required to build your model. Gazebo provides a set of simple shapes: box, sphere, and cylinder. 
+
+Tip: Keep meshes simple. This is especially true if you plan on using the mesh as a collision element. A common practice is to use a low polygon mesh for a collision element, and higher polygon mesh for the visual. An even better practice is to use one of the built-in shapes (box, sphere, cylinder) as the collision element.
+
+#### Step 2: Make your model SDF file
+
+Here is a very rudimentary minimum box model file with just a unit sized box shape as a collision geometry and the same unit box visual with unit inertias:
+
+Create the **box.sdf** model file
+
+```
+gedit box.sdf
+```
+
+```xml
+<?xml version='1.0'?>
+<sdf version="1.4">
+<model name="ny_model">
+	<pose>0 0 0.5 0 0 0</pose>
+    <static>true</static>
+    	<link name="link">
+            <inertial>
+                <mass>1.0</mass>
+                <inertia> 
+                    <ixx>0.083</ixx> 
+                    <ixy>0.0</ixy>
+                    <ixz>0.0</ixz>
+                    <iyy>0.083</iyy>
+                    <iyz>0.0</iyz>
+                    <izz>0.083</izz>
+                </inertia>
+            </inertial>
+            <collision name="collision">
+            	<geometry>
+                	<box>
+                    	<size>1 1 1</size>
+                    </box>
+                </geometry>
+            </collision>
+            <visual name="visual">
+            	<geometry>
+                	<box>
+                    	<size>1 1 1</size>	
+                    </box>
+                </geometry>
+            </visual>
+    	</link>
+    </model>
+</sdf>
+```
+
+Tip: The above example sets the simple bax model to be static, which makes the model immovable. Set the <static> tag to false if you want your model to be movable.
+
+#### Step 3: Add to the model SDF file
+
+With a working .sdf file, slowly start adding in more complexity. with each new addition. load model using the graphical client to make sure the model is correct.
+
+Here is a good order in which to add features:
+
+1. Add a link
+2. Set the collision element
+3. Set the visual element
+4. Set the inertial properties
+5. Go to #1 until all links have been added
+6. Add all joints
+7. Add all plugins
+
+## Make a Mobile Robot
+
+### Setup model directory
+
+1. Create a model directory:
+
+```
+mkdir -p ~/.gazebo/models/my_robot
+```
+
+2. Create a model config file:
+
+```
+gedit ~/.gazebo/models/my_robot/model.config
+```
+
+3. model.config
+
+```xml
+<?xml version="1.0"?>
+<model>
+  <name>My Robot</name>
+  <version>1.0</version>
+  <sdf version='1.4'>model.sdf</sdf>
+
+  <author>
+   <name>My Name</name>
+   <email>me@my.email</email>
+  </author>
+
+  <description>
+    My awesome robot.
+  </description>
+</model>
+```
+
+4. Create a model.sdf file
+
+```
+gedit ~/.gazebo/models/my_robot/model.sdf
+```
+
+5. model.sdf
+
+```xml
+<?xml version='1.0'?>
+<sdf version='1.4'>
+  <model name="my_robot">
+  </model>
+</sdf>
+```
+
+### Builld the Model's Structure
+
+This step will create a rectangular base with two wheels.
+
+1. Make the model static by adding a static element to the model.sdf file:
+
+```xml
+<static>ture</static>
+```
+
+2. Add the rectangular base by editing the model.sdf file:
+
+```xml
+		<link name='chassis'>
+            <pose>0 0 .1 0 0 0</pose>
+
+            <collision name='collision'>
+              <geometry>
+                <box>
+                  <size>.4 .2 .1</size>
+                </box>
+              </geometry>
+            </collision>
+
+            <visual name='visual'>
+              <geometry>
+                <box>
+                  <size>.4 .2 .1</size>
+                </box>
+              </geometry>
+            </visual>
+          </link>
+```
+
+The most common use for different collision and visual elements is to have a simplified collision element paired with a visual element that uses a complex mesh. This will help improve performance.
+
+3. Try out your model by running gazebo.
+4. Add a caster to the robot. The caster is a sphere with no friction.
+
+```xml
+		<collision name='caster_collision'>
+            <pose>-0.15 0 -0.05 0 0 0</pose>
+            <geometry>
+                <sphere>
+                <radius>.05</radius>
+              </sphere>
+            </geometry>
+
+            <surface>
+              <friction>
+                <ode>
+                  <mu>0</mu>
+                  <mu2>0</mu2>
+                  <slip1>1.0</slip1>
+                  <slip2>1.0</slip2>
+                </ode>
+              </friction>
+            </surface>
+          </collision>
+
+          <visual name='caster_visual'>
+            <pose>-0.15 0 -0.05 0 0 0</pose>
+            <geometry>
+              <sphere>
+                <radius>.05</radius>
+              </sphere>
+            </geometry>
+          </visual>
+```
+
+5. Add a left wheel.
+
+```xml
+<link name="left_wheel">
+        <pose>0.1 0.13 0.1 0 1.5707 1.5707</pose>
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius>.1</radius>
+              <length>.05</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>.1</radius>
+              <length>.05</length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+```
+
+6. Add a right wheel.
+
+```xml
+  <link name="right_wheel">
+        <pose>0.1 -0.13 0.1 0 1.5707 1.5707</pose>
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius>.1</radius>
+              <length>.05</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>.1</radius>
+              <length>.05</length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+```
+
+7. Make the model dynamic by setting <static> to false, and add two hinge joints for the left and right wheels.
+
+```xml
+   <joint type="revolute" name="left_wheel_hinge">
+        <pose>0 0 -0.03 0 0 0</pose>
+        <child>left_wheel</child>
+        <parent>chassis</parent>
+        <axis>
+          <xyz>0 1 0</xyz>
+        </axis>
+      </joint>
+
+      <joint type="revolute" name="right_wheel_hinge">
+        <pose>0 0 0.03 0 0 0</pose>
+        <child>right_wheel</child>
+        <parent>chassis</parent>
+        <axis>
+          <xyz>0 1 0</xyz>
+        </axis>
+      </joint>
+```
+
+The two joints rotate about the y axis <xyz>0 1 0</xyz>, and connect each wheel to the chassis.
+
+8. Try out on gazebo.
+9. A new window should appear that contains various controllers for each joint. 
+10. Under the Force tab, increase the force applied to each joint to about 0.1Nm.
+
+## Import Meshes
+
+### Prepare the Mesh
+
+Gazebo uses a right-hand coordinate system.
+
+Reduce Complexity
+
+Center the mesh
+
+Scale the mesh
+
+### Export the Mesh
+
+Once the mesh has been properly, export it as a Collada file. This format will contain all the 3D information and the materials.
+
+#### Test the Mesh
+
+The easiest way to test a mesh is to create a simple world file [my_mesh.world](http://bitbucket.org/osrf/gazebo_tutorials/raw/default/import_mesh/files/my_mesh.world) that loads the mesh. Replace `my_mesh.dae` with the actual filename of the mesh.
+
+```xml
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <model name="my_mesh">
+      <pose>0 0 0  0 0 0</pose>
+      <static>true</static>
+      <link name="body">
+        <visual name="visual">
+          <geometry>
+            <mesh><uri>file://my_mesh.dae</uri></mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+  </world>
+</sdf>
+```
+
+## Attach Meshes
+
