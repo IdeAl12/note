@@ -1,3 +1,5 @@
+[TOC]
+
 # Gazebo Tutorials
 
 ## Quick Start
@@ -147,3 +149,103 @@ The GUI library uses Qt to create graphical widgets for users to interact with t
 #### Plugins
 
 The physics, sensor, and rendering libraries support plugins. These plugins users with access to the respective libraries without using the communication system.
+
+## Build a Robot
+
+### Model structure and requirements
+
+Gazebo is able to dynamically load models into simulation either programmatically or through the GUI.
+
+Models in Gazebo define a physical entity with dynamic, kinematic, and visual properties.
+
+Gazebo relies on a database to store and maintain models available for use within simulation.
+
+#### The Model Database Repository
+
+The model database is a bitbucket repository.
+
+```
+hg clone https://bitbucket.org/osrf/gazebo_models
+```
+
+#### Model Database Structure
+
+A model database must abide by a specific directory and file structure. The root of a model database contains one directory for each model, and a **database.config** file with information about the database. Each model directory also has a **model.config** file that contains meta data about the model. A model directory also contains the SDF for the model and any materials, meshes, and plugins.
+
+The structure is as follows:
+
+- Database
+  - database.config: Meta data about the database. This is now populated automatically from CMakeLists.txt
+  - model_1: A directory for model_1
+    - model.config: Meta-data about model_1
+    - model.sdf: SDF description of the model
+    - modef.sdf.erb: Ruby embedded SDF model description
+    - meshes: A directory for all COLLADA and STL files
+    - materials: A directory which should only contain the **textures** and **scripts** subdirectories
+      - textures: A directory for image files (jpg, png, etc)
+      - scripts: A directory for OGRE material scripts
+    - plugins: A directory for plugin source and header files
+
+##### Database Config
+
+This file contains license information for the models, a name for the database, and a list of all the valid models.
+
+Note: The database.config file is only required for online repositories.
+
+The format of this database.config is:
+
+```xml
+<?xml version='1.0'?>
+<database>
+    <name>name_of_this_databae</name>
+    <license>Creative Commons Attribution 3.0 Unported</license>
+    <models>
+        <uri>file://model_directory</uri>
+    </models>
+</database>
+```
+
+##### Model Config
+
+Each model must have a model.config file in the model's root directory that contains meta information about the model. The format of this model.config is:
+
+```xml
+<?xml version="1.0?>
+<model>
+    <name>My Model Name</name>
+    <version>1.0</version>
+    <sdf version='1.5'>model.sdf</sdf>
+    
+    <author>
+    	<name>My name</name>
+        <email></email>
+    </author>
+    
+    <description>
+        A description of the model
+    </description>
+</model>
+```
+
+##### Model SDF 
+
+Each model requires a model.sdf file that contains the Simulator Description Format of the model.
+
+##### Model SDF.ERB
+
+Standard SDF file which can contain ruby code embedded. This option is used to programatically generate SDF files using **Embedded Ruby code** templates.
+
+## How to contribute a model
+
+### Creating a model
+
+Create a direcetory for your model under the gazebo_models directory. 
+
+That directory must include the file model.config and at least one **.sdf** file. 
+
+Also make sure you add the model directory to the **CMakeLists.txt** file.
+
+### Contents of Model.config:
+
+The model.config file provides information necessary to pick the pproper SDF file, information on authorship of the model, and a textual description of the model.
+
