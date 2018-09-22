@@ -1080,6 +1080,216 @@ class Solution(object):
         return s if num==0 or s!=0 else 9  
 ```
 
+### 数组拆分I
+
+```python
+class Solution(object):
+    def arrayPairSum(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        nums = sorted(nums)
+        ret = 0
+        for i in range(len(nums)/2):
+            ret += nums[i*2]
+        return ret
+    #   return sum(sorted(nums)[::2])
+```
+
+### N叉树的后序遍历
+
+```python
+# 递归法
+"""
+# Definition for a Node.
+class Node(object):
+    def __init__(self, val, children):
+        self.val = val
+        self.children = children
+"""
+class Solution(object):
+    def postorder(self, root):
+        """
+        :type root: Node
+        :rtype: List[int]
+        """
+        if not root:
+            return []
+        if root.children == None:
+            return [root.val]
+        result = []
+        for child in root.children:
+            result += self.postorder(child)
+        result.append(root.val)
+        return result
+```
+
+```python
+# 迭代法
+"""
+# Definition for a Node.
+class Node(object):
+    def __init__(self, val, children):
+        self.val = val
+        self.children = children
+"""
+class Solution(object):
+    def postorder(self, root):
+        """
+        :type root: Node
+        :rtype: List[int]
+        """
+        if not root:
+            return []
+        stack = []
+        ret = []
+        stack.append(root)
+        while stack:
+            curr = stack.pop()
+            ret.append(curr.val)
+            if curr.children:
+                # curr.children.reverse()
+                stack += curr.children
+        return ret[::-1]
+```
+
+### N叉树的前序遍历
+
+```python
+# 迭代法 使用栈
+"""
+# Definition for a Node.
+class Node(object):
+    def __init__(self, val, children):
+        self.val = val
+        self.children = children
+"""
+class Solution(object):
+    def preorder(self, root):
+        """
+        :type root: Node
+        :rtype: List[int]
+        """
+        if not root:
+            return []
+        stack = []
+        ret = []
+        stack.append(root)
+        while stack:
+            curr = stack.pop()
+            ret.append(curr.val)
+            if curr.children:
+                curr.children.reverse()
+                stack += curr.children
+        return ret
+```
+
+### N叉树的层次遍历
+
+```python
+"""
+# Definition for a Node.
+class Node(object):
+    def __init__(self, val, children):
+        self.val = val
+        self.children = children
+"""
+class Solution(object):
+    def levelOrder(self, root):
+        """
+        :type root: Node
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return []
+        stack = []
+        ret = []
+        stack.append(root)
+        while stack:
+            l = len(stack)
+            sub = []
+            for i in range(l):
+                curr = stack.pop(0)
+                sub.append(curr.val)
+                for child in curr.children:
+                    stack.append(child)
+            ret.append(sub)
+        return ret 
+```
+
+### 二叉树的层次遍历II
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def levelOrderBottom(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return []
+        stack = []
+        ret = []
+        stack.append(root)
+        while stack:
+            l = len(stack)
+            sub = []
+            # print ret
+            for i in range(l):
+                curr = stack.pop(0)
+                sub.append(curr.val)
+                if curr.left:
+                    stack.append(curr.left)
+                if curr.right:
+                    stack.append(curr.right)
+            ret.append(sub)
+        return ret[::-1] 
+```
+
+### 二叉树的层平均值
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def averageOfLevels(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[float]
+        """
+        if not root:
+            return []
+        stack = []
+        ret = []
+        stack.append(root)
+        while stack:
+            l = len(stack)
+            sub = []
+            # print ret
+            for i in range(l):
+                curr = stack.pop(0)
+                sub.append(curr.val)
+                if curr.left:
+                    stack.append(curr.left)
+                if curr.right:
+                    stack.append(curr.right)
+            ret.append(float(sum(sub))/len(sub))
+        return ret
+```
+
 
 
 ## 中等
@@ -1442,6 +1652,44 @@ class Solution(object):
             return False
         return True
 ```
+
+### 二叉树的层次遍历
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def levelOrder(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return []
+        stack = []
+        ret = []
+        stack.append(root)
+        while stack:
+            l = len(stack)
+            sub = []
+            # print ret
+            for i in range(l):
+                curr = stack.pop(0)
+                sub.append(curr.val)
+                if curr.left:
+                    stack.append(curr.left)
+                if curr.right:
+                    stack.append(curr.right)
+            ret.append(sub)
+        return ret 
+```
+
+
 
 ## 困难
 
