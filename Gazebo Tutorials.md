@@ -594,3 +594,33 @@ The easiest way to test a mesh is to create a simple world file [my_mesh.world](
 
 ## Attach Meshes
 
+Change the mesh to the chassis visual:
+
+```xml
+    <visual name='visual'>
+      <geometry>
+        <mesh>
+          <uri>model://pioneer2dx/meshes/chassis.dae</uri>
+        </mesh>
+      </geometry>
+    </visual>
+```
+
+Modify the visual to have a scaling factor.
+
+```xml
+          <scale>0.9 0.5 0.5</scale>
+```
+
+Raise it up a little by specifying a pose for the visual.
+
+```xml
+      <pose>0 0 0.05 0 0 0</pose>
+```
+
+Since we did not modify the `<collision>` elements in this model, the box geometry will still be used by the physics engine for collision dynamics and by CPU based ray sensors.
+
+Note: Materials (texture files such with extension like .png or .jpg), should be placed in `~/.gazebo/models/my_robot/materials/textures`.
+
+## Add a Sensor to a Robot
+
