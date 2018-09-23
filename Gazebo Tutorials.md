@@ -624,3 +624,32 @@ Note: Materials (texture files such with extension like .png or .jpg), should be
 
 ## Add a Sensor to a Robot
 
+### Adding a Laser
+
+Add the following lines directly before the `</model>` tag near the end of the file.
+
+```xml
+    <include>
+      <uri>model://hokuyo</uri>
+      <pose>0.2 0 0.2 0 0 0</pose>
+    </include>
+    <joint name="hokuyo_joint" type="fixed">
+      <child>hokuyo::link</child>
+      <parent>chassis</parent>
+    </joint>
+```
+
+The <include> block tells Gazebo to find a model, and insert it at a given <pose> relative to the parent model. The <uri> block tells gazebo where to find the model inside its model database.
+
+The new <joint> connects the inserted hokuyo laser onto the chassis of the robot. The joint is fixed to prevent it from moving.
+
+## Make a Simple Gripper
+
+Finde an Error
+
+## Attach Gripper to Robot 
+
+Find an Error
+
+## Nested model
+
