@@ -722,6 +722,7 @@ class Solution(object):
         :rtype: int
         """
         x = str(bin(x)[2:])[::-1]
+        # 二进制
         y = str(bin(y)[2:])[::-1]
         count = 0
         if len(x) > len(y):
@@ -1316,23 +1317,6 @@ class Solution(object):
 
 ### 按奇偶校验排序数组
 
-给定一个非负整数数组 `A`，返回一个由 `A` 的所有偶数元素组成的数组，后面跟 `A` 的所有奇数元素。
-
-你可以返回满足此条件的任何数组作为答案。 
-
-**示例：**
-
-```
-输入：[3,1,2,4]
-输出：[2,4,3,1]
-输出 [4,2,3,1]，[2,4,1,3] 和 [4,2,1,3] 也会被接受。
-```
-
-**提示：**
-
-1. `1 <= A.length <= 5000`
-2. `0 <= A[i] <= 5000`
-
 ```python
 class Solution(object):
     def sortArrayByParity(self, A):
@@ -1348,6 +1332,136 @@ class Solution(object):
             if i%2 == 1:
                 ret.append(i)
         return ret
+```
+
+### 子域名访问计数
+
+```python
+class Solution(object):
+    def subdomainVisits(self, cpdomains):
+        """
+        :type cpdomains: List[str]
+        :rtype: List[str]
+        """
+        dicts={}       
+        n = len(cpdomains)
+        for item in cpdomains:
+            array = item.split(' ')
+            num = (int)(array[0])
+            domain = array[1]
+            domainLen = len(domain.split('.'))
+            for i in range(domainLen):
+                tmp = domain.split('.',i).pop()
+                # split()通过指定分隔符对字符串进行切片，如果参数num 有指定值，则仅分隔 num 个子字符串
+                if tmp in dicts.keys():
+                    dicts[tmp]=dicts[tmp]+num
+                else:
+                    dicts[tmp]=num
+        domainList=[]
+        for key in dicts:
+            tmp = (str)(dicts[key])+" "+key
+            domainList.append(tmp)
+        
+        return domainList
+```
+
+### 字符的最短距离
+
+```python
+class Solution(object):
+    def shortestToChar(self, S, C):
+        """
+        :type S: str
+        :type C: str
+        :rtype: List[int]
+        """
+        ret = []
+        for i in range(len(S)):
+            l,r = S.rfind(C,0,i), S.find(C,i+1,len(S))
+            if S[i] == C:
+                ret.append(0)
+            elif l != -1:
+                if r != -1:
+                    # print i-S.find(C,0,i), S.find(C,i,len(S))-i
+                    ret.append(min(i-l, r-i))
+                else:
+                    ret.append(i-l)
+            elif r != -1:
+                if l != -1:
+                    ret.append(min(i-l, r-i))
+                else:
+                    ret.append(r-i)
+            elif l == -1 and r == -1:
+                ret.append(inf)
+        return ret
+```
+
+```python
+class Solution(object):
+    def shortestToChar(self, S, C):
+        """
+        :type S: str
+        :type C: str
+        :rtype: List[int]
+        """
+        res = []
+        for i in range(len(S)):
+            if S[i] == C: 
+                res.append(0)
+                continue
+                
+            r = S.find(C, i+1)
+            l = S.rfind(C, 0, i) if i != 0 else -1
+            if l != -1 and r != -1:
+                res.append(min(i - l,r - i))
+            else:
+                res.append(i - l) if r == -1 else res.append(r - i)
+                
+        return res
+```
+
+Note: **res.append(i - l) if r == -1 else res.append(r - i)**
+
+### 将有序数组转换为二叉搜索树
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def sortedArrayToBST(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: TreeNode
+        """
+        if not nums:
+            return None
+        mid=len(nums)//2
+        
+        root = TreeNode(nums[mid])
+        root.left = self.sortedArrayToBST(nums[:mid])
+        root.right = self.sortedArrayToBST(nums[mid+1:])
+        return root
+```
+
+### 交替位二进制数
+
+```python
+class Solution(object):
+    def hasAlternatingBits(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        s = bin(n)[2:]
+        for i in range(len(s)-1):
+            if s[i] == s[i+1]:
+                return False
+        return True
 ```
 
 
