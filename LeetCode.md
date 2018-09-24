@@ -1464,6 +1464,173 @@ class Solution(object):
         return True
 ```
 
+### 写字符串所需要的行数
+
+```python
+class Solution(object):
+    def numberOfLines(self, widths, S):
+        """
+        :type widths: List[int]
+        :type S: str
+        :rtype: List[int]
+        """
+        row = 1
+        count = 0
+        for i in S:
+            if count + widths[ord(i)-ord('a')]>100:
+                count = widths[ord(i)-ord('a')]
+                row += 1
+            else:
+                count += widths[ord(i)-ord('a')]
+        return [row, count]
+```
+
+### 杨辉三角
+
+```python
+class Solution(object):
+    def generate(self, numRows):
+        """
+        :type numRows: int
+        :rtype: List[List[int]]
+        """
+        ret = []
+        for i in range(numRows):
+            tmp = [1]*(i+1)
+            ret.append(tmp)
+            for j in range(1,i):
+                ret[i][j] = ret[i-1][j-1] + ret[i-1][j]
+        return ret
+```
+
+### 杨辉三角II
+
+```python
+class Solution(object):
+    def getRow(self, rowIndex):
+        """
+        :type rowIndex: int
+        :rtype: List[int]
+        """
+        ret = [1]
+        if not rowIndex:
+            return ret
+        for j in range(rowIndex):
+            ret = [1] + [ret[i]+ret[i+1] for i in range(len(ret)-1)] +[1]
+        return ret
+```
+
+### 重塑矩阵
+
+```python
+class Solution(object):
+    def matrixReshape(self, nums, r, c):
+        """
+        :type nums: List[List[int]]
+        :type r: int
+        :type c: int
+        :rtype: List[List[int]]
+        """
+        if len(nums)*len(nums[0]) != r*c:
+            return nums
+        ret = [[0 for _ in range(c)] for _ in range(r)]
+        # print ret
+        tmp = []
+        for i in range(len(nums)):
+            for j in range(len(nums[0])):
+                tmp.append(nums[i][j])
+        count = 0
+        for i in range(r):
+            for j in range(c):
+                ret[i][j] = tmp[count]
+                count += 1
+        return ret
+```
+
+### 岛屿的周长
+
+```python
+class Solution(object):
+    def islandPerimeter(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        count = 0
+        m = len(grid)
+        n = len(grid[0])
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == 1:
+                    count += 4
+                    # if i-1>=0:
+                    #     if grid[i-1][j] == 1:
+                    #         count -= 1
+                    # if j-1>=0:
+                    #     if grid[i][j-1] == 1:
+                    #         count -= 1
+                    # if j+1<n:
+                    #     if grid[i][j+1] == 1:
+                    #         count -= 1
+                    # if i+1<m:
+                    #     if grid[i+1][j] == 1:
+                    #         count -= 1
+                    if i - 1 >= 0 and grid[i - 1][j] == 1:
+                        count -= 2
+                    if j - 1 >= 0 and grid[i][j - 1] == 1:
+                        count -= 2
+        return count
+```
+
+### 三位形体投影面积
+
+```python
+class Solution(object):
+    def projectionArea(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        count = 0
+        m = len(grid)
+        n = len(grid[0])
+        for i in range(m):
+            count += max(grid[i])
+            count += max([j[i] for j in grid])
+            # 二维列表 列
+            for j in range(n):
+                if grid[i][j] != 0:
+                    count += 1
+        return count        
+```
+
+### 罗马数字转整数
+
+```python
+class Solution(object):
+    def romanToInt(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        dir = {'I':1,'V':5,'X':10,'L':50,'C':100,'D':500,'M':1000,
+               'IV':4,'IX':9,'XL':40,'XC':90,'CD':400,'CM':900}
+        count = 0
+        i = 0
+        while i<len(s):
+            if i == len(s)-1:
+                count += dir[s[i]]
+            else:
+                key = s[i]+s[i+1]
+                if dir.has_key(key):
+                    count += dir[s[i]+s[i+1]]
+                    i += 1
+                else:
+                    count += dir[s[i]]
+            i += 1
+        return count
+```
+
 
 
 ## 中等
