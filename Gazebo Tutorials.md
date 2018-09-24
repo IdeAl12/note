@@ -653,3 +653,9 @@ Find an Error
 
 ## Nested model
 
+As of SDF 1.5, the <model> SDF element has been extended to support self_referencing, which means allowing <model> elements to be nested.
+
+## Model Editor
+
+On the Edit menu, go to **Model Editor**.
+
