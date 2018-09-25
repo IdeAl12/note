@@ -1631,6 +1631,133 @@ class Solution(object):
         return count
 ```
 
+### 二进制间距
+
+```python
+class Solution(object):
+    def binaryGap(self, N):
+        """
+        :type N: int
+        :rtype: int
+        """
+        s = str(bin(N)[2:])
+        i = 0
+        tmp = 0
+        m = 0
+        print s
+        while i<len(s):
+            if s[i] == '1':
+                for j in range(i+1,len(s)):
+                    if s[j] == '1':
+                        tmp = j-i
+                        i = j-1
+                        break
+                if tmp > m :
+                    m = tmp
+            i += 1
+        return m
+```
+
+### 分糖果
+
+```python
+class Solution(object):
+    def distributeCandies(self, candies):
+        """
+        :type candies: List[int]
+        :rtype: int
+        """
+        return min(len(candies)//2, len(set(candies)))
+```
+
+### 用栈实现队列
+
+```python
+class MyQueue(object):
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.queue = []
+
+    def push(self, x):
+        """
+        Push element x to the back of queue.
+        :type x: int
+        :rtype: void
+        """
+        self.queue.append(x)
+
+    def pop(self):
+        """
+        Removes the element from in front of queue and returns that element.
+        :rtype: int
+        """
+        return self.queue.pop(0x)
+
+    def peek(self):
+        """
+        Get the front element.
+        :rtype: int
+        """
+        return self.queue[0]
+
+    def empty(self):
+        """
+        Returns whether the queue is empty.
+        :rtype: bool
+        """
+        return len(self.queue) == 0
+
+
+# Your MyQueue object will be instantiated and called as such:
+# obj = MyQueue()
+# obj.push(x)
+# param_2 = obj.pop()
+# param_3 = obj.peek()
+# param_4 = obj.empty()
+```
+
+### 只出现一次的数字
+
+```python
+class Solution(object):
+    def singleNumber(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        nums = sorted(nums)
+        # i = 0
+        l = len(nums)
+        if l == 1:
+            return nums[0]
+        for i in range(0,l):
+            if i == l-1:
+                if nums[i] != nums[i-1]:
+                    return nums[i]
+            elif nums[i] != nums[i+1]:
+                if i == 0 or nums[i] != nums[i-1]:
+                    return nums[i]
+            # i += 2
+        return None
+```
+
+```python
+class Solution(object):
+    def singleNumber(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        result = 0
+        for num in nums:
+            result = result ^ num
+            # ^与运算
+        return result
+```
+
 
 
 ## 中等
