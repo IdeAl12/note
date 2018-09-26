@@ -1889,9 +1889,145 @@ class Solution(object):
             res.append(path)
 ```
 
+### 找不同
+
+```python
+class Solution(object):
+    def findTheDifference(self, s, t):
+        """
+        :type s: str
+        :type t: str
+        :rtype: str
+        """
+        s = sorted(s)
+        t = sorted(t)
+        for i in range(len(t)):
+            if i >= len(s):
+                return t[i]
+            elif t[i] != s[i]:
+                return t[i]
+        return None
+```
+
+```python
+class Solution(object):
+    def findTheDifference(self, s, t):
+        """
+        :type s: str
+        :type t: str
+        :rtype: str
+        """
+        n = ''
+        for i in set(t):
+            n += ''.join(i)
+        for j in n:
+            if s.count(j) != t.count(j):
+                return j
+```
+
+### 两个数组的交集
+
+```python
+class Solution(object):
+    def intersection(self, nums1, nums2):
+        """
+        :type nums1: List[int]
+        :type nums2: List[int]
+        :rtype: List[int]
+        """
+        return list(set(nums1)&set(nums2))
+```
+
+### 求众数
+
+```python
+class Solution(object):
+    def majorityElement(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        a = list(set(nums))
+        for i in a:
+            if nums.count(i)>len(nums)//2:
+                return i
+        
+        # return sorted(nums)[len(nums)/2]
+```
+
+### 棒球比赛
+
+```python
+class Solution(object):
+    def calPoints(self, ops):
+        """
+        :type ops: List[str]
+        :rtype: int
+        """
+        record = 0
+        stack = []
+        for i in ops:
+            if i == "+":
+                tmp = stack[-1] + stack[-2]
+                record += tmp
+                stack.append(tmp)
+            elif i == 'C':
+                record -= stack.pop()
+            elif i == 'D':
+                tmp = stack[-1]*2
+                record += tmp
+                stack.append(tmp)
+            else:
+                record += int(i)
+                stack.append(int(i))
+        return record
+```
+
+### 二进制表示中质数个计算置位
+
+```python
+class Solution(object):
+    def countPrimeSetBits(self, L, R):
+        """
+        :type L: int
+        :type R: int
+        :rtype: int
+        """
+        # 质数判断
+        def isPrime(num):
+            if num > 1:
+                for i in range(2,num):
+                    if (num % i) == 0:
+                        return False
+                return True
+            else:
+                return False
+        count = 0
+        for i in range(L,R+1):
+            count += 1 if isPrime(str(bin(i)[2:]).count("1")) else 0
+        return count
+```
+
 
 
 ## 中等
+
+### 求众数II
+
+```python
+class Solution(object):
+    def majorityElement(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[int]
+        """
+        a = list(set(nums))
+        ret = []
+        for i in a:
+            if nums.count(i)>len(nums)//3:
+                ret.append(i)
+        return ret
+```
 
 ### 两数相加
 
