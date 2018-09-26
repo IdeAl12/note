@@ -1758,6 +1758,137 @@ class Solution(object):
         return result
 ```
 
+### 下一个更大元素I
+
+```python
+class Solution(object):
+    def nextGreaterElement(self, findNums, nums):
+        """
+        :type findNums: List[int]
+        :type nums: List[int]
+        :rtype: List[int]
+        """
+        def findbig(nums, num):
+            for i in range(len(nums)):
+                if nums[i]>num:
+                    return nums[i]
+            return -1
+        ret = []
+        for i in range(len(findNums)):
+            loc = nums.index(findNums[i])
+            ret.append(findbig(nums[loc+1:],findNums[i]))
+        
+        return ret
+```
+
+
+
+```python
+class Solution(object):
+    def nextGreaterElement(self, findNums, nums):
+        """
+        :type findNums: List[int]
+        :type nums: List[int]
+        :rtype: List[int]
+        """
+        # 用字典保存nums2中的{n, greater than n}，用单调栈生成dict
+        greater_dict = {} # {n, greater than n}
+        stack = [] # 单调栈、栈底最大
+        for i in range(len(nums)):
+            while stack and stack[-1] < nums[i]:
+                greater_dict[stack.pop()] = nums[i]
+            stack.append(nums[i])
+        r = []
+        for n in findNums:
+            r.append(greater_dict.get(n, -1))
+        return r
+```
+
+### 链表的中间节点
+
+```python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def middleNode(self, head):
+        """
+        :type head: ListNode
+        :rtype: ListNode
+        """
+        def length(head):
+            if head == None:
+                return 0
+            count = 0
+            while head:
+                count += 1
+                head = head.next
+            return count
+        
+        mid = length(head)//2 
+        while mid>0:
+            head = head.next
+            mid -= 1
+        return head
+```
+
+```python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def middleNode(self, head):
+        """
+        :type head: ListNode
+        :rtype: ListNode
+        """
+        slow = head
+        fast = head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+        return slow
+```
+
+### 二叉树的所有路径
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def binaryTreePaths(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[str]
+        """
+        path = ''
+        res = []
+        self.TreePathsHelper(root, path, res)
+        return res
+
+    def TreePathsHelper(self, root, path, res):
+        if root is None:
+            return
+        path += str(root.val)
+        if root.left != None:
+            self.TreePathsHelper(root.left, path + '->', res)
+        if root.right != None:
+            self.TreePathsHelper(root.right, path + '->', res)
+        if root.left is None and root.right is None:
+            res.append(path)
+```
+
 
 
 ## 中等
