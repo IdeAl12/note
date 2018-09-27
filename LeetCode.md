@@ -2008,6 +2008,124 @@ class Solution(object):
         return count
 ```
 
+### 二叉搜索树中的搜索
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def searchBST(self, root, val):
+        """
+        :type root: TreeNode
+        :type val: int
+        :rtype: TreeNode
+        """
+        if root == None:
+            return None
+        if root.val == val:
+            return root
+        elif root.val < val:
+            return self.searchBST(root.right, val)
+        else:
+            return self.searchBST(root.left, val)
+```
+
+### 存在重复元素
+
+```python
+class Solution(object):
+    def containsDuplicate(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: bool
+        """
+        return len(nums) != len(set(nums))
+```
+
+### 2的幂
+
+```python
+class Solution(object):
+    def isPowerOfTwo(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        if n < 1:
+            return False
+        return not(n & (n-1))
+```
+
+```python
+class Solution(object):
+    def isPowerOfTwo(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        while n%2 == 0 and n>1:
+            n = n/2
+        return (n==1)
+```
+
+### 3的幂
+
+```python
+class Solution(object):
+    def isPowerOfThree(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        while n%3 == 0 and n>1:
+            n = n/3
+        return (n==1)
+```
+
+```python
+class Solution:
+    def isPowerOfThree(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        if n <= 0:
+            return False
+        maxint = 0x7fffffff
+
+        k=math.log(maxint)//math.log(3)
+        b3=3**k
+        return (b3%n)==0
+    #如果某个数n为3的幂 ，则k=log3N
+	# 代码思路：
+	# 首先求出int范围最大的3的幂   Max3
+	# 如果n为3的幂，则Max3必定能整除n
+
+```
+
+
+
+### 4的幂
+
+```python
+class Solution(object):
+    def isPowerOfFour(self, num):
+        """
+        :type num: int
+        :rtype: bool
+        """
+        if num<=0:
+            return False;
+        return num & num-1==0 and num&0x55555555 ==num ;
+    # 如果不能用递归循环做，就使用位操作。1个数是2的幂肯定是4的幂，但反过来不成立，4的幂只能是奇数位为1，而2的幂只有有一个位置为1就行。
+# 所以先判断是否为2的幂，然后通过与.0X55555555(....1010101)进行&操作，保留奇数位，判断是否改变。
+```
+
 
 
 ## 中等
