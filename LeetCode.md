@@ -2108,8 +2108,6 @@ class Solution:
 
 ```
 
-
-
 ### 4的幂
 
 ```python
@@ -2126,9 +2124,99 @@ class Solution(object):
 # 所以先判断是否为2的幂，然后通过与.0X55555555(....1010101)进行&操作，保留奇数位，判断是否改变。
 ```
 
+### 移动零
+
+```python
+class Solution(object):
+    def moveZeroes(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: void Do not return anything, modify nums in-place instead.
+        """
+        # 移动非零元素（操作次数就是非零元素的个数）
+        j = 0   # 记录非零元素应该换到第几个位置
+        for i in range(len(nums)):
+            if nums[i] != 0:       
+                nums[j], nums[i] = nums[i], nums[j]
+                j += 1
+```
+
+### 移除元素
+
+```python
+class Solution(object):
+    def removeElement(self, nums, val):
+        """
+        :type nums: List[int]
+        :type val: int
+        :rtype: int
+        """
+        if len(nums) == 0:
+            return 0;
+        j=0
+        for i in range(0,len(nums)):
+            if nums[i] != val :
+                nums[j] = nums[i]
+                j = j + 1
+        return j
+# 题目中说不用考虑数组中超出新长度后面的元素，就是把需要的元素移到前面
+```
+
+### 删除排序数组中的重复项
+
+```python
+class Solution(object):
+    def removeDuplicates(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        if len(nums) == 0:
+            return 0;
+        j=0
+        for i in range(0,len(nums)):
+            if nums[i] != nums[j]:
+                j = j + 1
+                nums[j] = nums[i] 
+        return j+1
+```
+
 
 
 ## 中等
+
+### 删除排序数组中的重复项II
+
+```python
+class Solution(object):
+    def removeDuplicates(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        # if len(nums) == 0:
+        #     return 0
+        # j = 0
+        # for i in range(1,len(nums)):
+        #     if nums[i] != nums[j]:
+        #         j = j + 1
+        #         nums[j] = nums[i] 
+        #     else:
+        #         if j <1:
+        #             j += 1
+        #         elif nums[j] != nums[j-1]:
+        #             j+=1
+        #             nums[j] = nums[i]          
+        # return j+1
+        i = 0
+        for e in nums:
+            if i < 2 or e != nums[i-2]:
+                nums[i] = e
+                i += 1
+        return i
+```
+
+
 
 ### 求众数II
 
