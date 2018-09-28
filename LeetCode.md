@@ -3,6 +3,84 @@
 # LeetCode
 
 ## 简单
+
+### 快乐数
+
+```python
+class Solution(object):
+    def isHappy(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        stack = []
+        n = str(n)
+        while int(n)!=1:
+            sum = 0
+            for i in n:
+                sum += int(i)**2
+            if sum in stack:
+                return False
+            stack.append(sum)
+            n = str(sum)
+        return True
+```
+
+### 最大连续1的个数
+
+```python
+class Solution(object):
+    def findMaxConsecutiveOnes(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+#         string = ''
+#         for i in nums:
+#             string += str(i)
+#         lis = string.split('0')
+#         return len(str(max(lis)))
+        res = 0
+        k = 0
+        for x in nums:
+            if x == 1:
+                k = k + 1
+            else:
+                if k > res:
+                    res = k
+                k = 0
+        if k > res:
+            res = k
+        return res
+```
+
+
+
+### 报数
+
+```python
+class Solution(object):
+    def countAndSay(self, n):
+        """
+        :type n: int
+        :rtype: str
+        """ 
+        ret = '1'
+        for _ in range(n-1):
+            count = 0
+            tmp = ret[0]
+            result = ''
+            for i in range(0,len(ret)):
+                if tmp == ret[i]:
+                    count += 1
+                else:
+                    result = result +str(count) + tmp 
+                    tmp = ret[i]
+                    count = 1
+            ret = result + str(count) + tmp 
+        return ret
+```
+
 ### 两数之和
 
 ```python
