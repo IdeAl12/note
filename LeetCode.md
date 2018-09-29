@@ -4,6 +4,122 @@
 
 ## 简单
 
+### 叶子相似的树
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def leafSimilar(self, root1, root2):
+        """
+        :type root1: TreeNode
+        :type root2: TreeNode
+        :rtype: bool
+        """
+        def leaf(root):
+            if root:
+                ret = ''
+                if root.left == None and root.right == None:
+                    ret += str(root.val)   
+                if root.left:
+                    ret += leaf(root.left)
+                if root.right:
+                    ret += leaf(root.right)
+                return ret
+            
+        return leaf(root1) == leaf(root2)         
+```
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def leafSimilar(self, root1, root2):
+        """
+        :type root1: TreeNode
+        :type root2: TreeNode
+        :rtype: bool
+        """
+        def leaf(root,ret):
+            if root:
+                if not root.left and not root.right:
+                    ret.append(root.val)
+                else:
+                    leaf(root.left, ret)
+                    leaf(root.right, ret)
+                
+        ret1 = []
+        ret2 = []
+        leaf(root1, ret1)
+        leaf(root2, ret2)
+        return  ret1 == ret2
+```
+
+### 反转链表
+
+```python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def reverseList(self, head):
+        """
+        :type head: ListNode
+        :rtype: ListNode
+        """
+        if head == None or head.next == None:
+            return head
+        newhead = None
+        while head:
+            tmp = head.next
+            head.next = newhead
+            newhead = head
+            head = tmp
+        return newhead
+```
+
+### 猜数字大小（二分法 重要）
+
+```python
+# The guess API is already defined for you.
+# @param num, your guess
+# @return -1 if my number is lower, 1 if my number is higher, otherwise return 0
+# def guess(num):
+
+class Solution(object):
+    def guessNumber(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        left = 0
+        right = n
+        while left <=right:
+            mid = left + (right - left)//2 
+            g = guess(mid)
+            if g == -1:
+                right = mid - 1
+            elif g == 1:
+                left = mid + 1
+            else:
+                return mid
+```
+
+
+
 ### 快乐数
 
 ```python
@@ -2466,7 +2582,7 @@ class Solution(object):
         # print root.val
         root.left = self.pruneTree(root.left)
         root.right = self.pruneTree(root.right)
-        # 先进性递归
+        # 先进行递归
         if root.left == None and root.right == None :
             if root.val==0:
                 return None
