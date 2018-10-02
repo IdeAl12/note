@@ -4,6 +4,132 @@
 
 ## 简单
 
+### 合并两个有序数组
+
+```python
+class Solution(object):
+    def merge(self, nums1, m, nums2, n):
+        """
+        :type nums1: List[int]
+        :type m: int
+        :type nums2: List[int]
+        :type n: int
+        :rtype: void Do not return anything, modify nums1 in-place instead.
+        """
+        index1 = m-1
+        index2 = n-1
+        while index2 >= 0:
+            if index1 < 0:
+                nums1[0:index2+1] = nums2[0:index2+1]
+                break
+            if nums1[index1] >= nums2[index2]:
+                nums1[index1 + index2 + 1] = nums1[index1]
+                index1 -= 1
+            else:
+                nums1[index1 + index2 + 1] = nums2[index2]
+                index2 -= 1
+            # 注意index的使用
+```
+
+### 最小栈
+
+```python
+class MinStack(object):
+
+    def __init__(self):
+        """
+        initialize your data structure here.
+        """
+        self.stack=[]
+        self.stack_bk=[]
+        
+
+    def push(self, x):
+        """
+        :type x: int
+        :rtype: void
+        """
+        if self.stack==[]:
+            self.stack_bk.append(x)
+        else:
+            if x<=self.stack_bk[-1]:
+                self.stack_bk.append(x)
+        self.stack.append(x)
+
+    def pop(self):
+        """
+        :rtype: void
+        """
+        if self.stack[-1]==self.stack_bk[-1]:
+            self.stack_bk.pop()
+        self.stack.pop()
+
+    def top(self):
+        """
+        :rtype: int
+        """
+        return self.stack[-1]
+
+    def getMin(self):
+        """
+        :rtype: int
+        """
+        return self.stack_bk[-1]
+
+
+
+# Your MinStack object will be instantiated and called as such:
+# obj = MinStack()
+# obj.push(x)
+# obj.pop()
+# param_3 = obj.top()
+# param_4 = obj.getMin()
+```
+
+### 合并两个有序链表
+
+```python
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    def mergeTwoLists(self, l1, l2):
+        """
+        :type l1: ListNode
+        :type l2: ListNode
+        :rtype: ListNode
+        """
+        if not l1 or not l2:
+            return l2 if not l1 else l1
+        ret = ListNode(0)
+        tmp = ret
+        while l1 or l2:
+            if not l1:
+                tmp.val = l2.val
+                l2 = l2.next
+                tmp.next = ListNode(0)
+            elif not l2:
+                tmp.val = l1.val
+                l1 = l1.next
+                tmp.next = ListNode(0)
+            elif l1.val > l2.val:
+                tmp.val = l2.val
+                l2 = l2.next
+                tmp.next = ListNode(0)
+            else:
+                tmp.val = l1.val
+                l1 = l1.next
+                tmp.next = ListNode(0)
+            if not l1 and not l2:
+                tmp.next = None
+            else:
+                tmp = tmp.next
+        return ret
+```
+
 ### 买卖股票的最佳时机
 
 ```python
@@ -39,8 +165,6 @@ class Solution(object):
         return profit
 ```
 
-
-
 ### 二叉搜索树的最近公共祖先
 
 ```python
@@ -73,8 +197,6 @@ class Solution(object):
             if r:
                 return r
 ```
-
-
 
 ### 叶子相似的树
 
