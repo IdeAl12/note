@@ -1,8 +1,50 @@
 [TOC]
 
-# LeetCode
+# LeetCode(First month)
 
 ## 简单
+
+### 最大子序和
+
+- 扫描法
+
+当我们加上一个正数时，和会增加；当我们加上一个负数时，和会减少。如果当前得到的和是个负数，那么这个和在接下来的累加中应该抛弃并重新清零，不然的话这个负数将会减少接下来的和。
+
+- 动态规划法
+
+设sum[i]为**以第i个元素结尾且和最大**的连续子数组。假设对于元素i，所有以它前面的元素结尾的子数组的长度都已经求得，那么以第i个元素结尾且和最大的连续子数组实际上，要么是以第i-1个元素结尾且和最大的连续子数组加上这个元素，要么是只包含第i个元素，即sum[i] 
+= max(sum[i-1] + a[i], a[i])。可以通过**判断sum[i-1] + a[i]是否大于a[i]来做选择**，而这实际上等价于判断**sum[i-1]是否大于0**。由于每次运算只需要前一次的结果，因此并不需要像普通的动态规划那样保留之前所有的计算结果，只需要保留上一次的即可，因此算法的时间和空间复杂度都很小 。
+
+```python
+class Solution(object):
+    def maxSubArray(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        summ = nums[0]
+        curr = nums[0]
+        # 扫描法
+        # for i in range(1,len(nums)):
+        #     if curr < 0:
+        #         curr = nums[i]
+        #     else:
+        #         curr += nums[i]
+        #     if curr > summ:
+        #         summ = curr
+        #     # print curr, summ
+        # return summ
+        
+        # 动态规划法
+        for i in range(1,len(nums)):
+            if curr > 0 :
+                curr += nums[i]
+            else:
+                curr = nums[i]
+            if summ < curr:
+                summ = curr
+        return summ
+```
 
 ### 合并两个有序数组
 
@@ -85,6 +127,27 @@ class MinStack(object):
 # param_3 = obj.top()
 # param_4 = obj.getMin()
 ```
+
+### 爬楼梯
+
+```python
+class Solution(object):
+    def climbStairs(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        condition = [0] * (n + 1)
+        condition[0] = 1
+        condition[1] = 1
+        for i in range(2, n+1):
+            condition[i] = condition[i-1] + condition[i-2]
+        return condition[n]        
+```
+
+- 注意：关于循环和递归： 
+  Loops may achieve a performance gain for your program. Recursion may achieve a performance gain for your programmer. Choose which is more important in your situation! 
+  如果使用循环，程序的性能会更高。如果使用递归，程序更容易理解。 
 
 ### 合并两个有序链表
 
