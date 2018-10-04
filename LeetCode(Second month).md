@@ -4,6 +4,85 @@
 
 ## 简单
 
+### 计数质数
+
+```python
+class Solution(object):
+    def countPrimes(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        if n < 3:
+            return 0
+        flag = [1]*(n+1)
+        count = 0
+        for i in xrange(2,n):
+            if flag[i] == 1:
+                j = i+i
+                while j<n:
+                    flag[j] = 0
+                    j += i
+                count += 1
+        return count
+```
+
+### 对称二叉树
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def isSymmetric(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        # BFS 广度优先搜索
+        
+        # if not root:
+        #     return True
+        # nodeleft = [root.left]
+        # noderight = [root.right]
+        # while nodeleft:
+        #     nodeleftnext = []
+        #     noderightnext = []
+        #     for i in range(len(nodeleft)):
+        #         if nodeleft[i] and noderight[i]:
+        #             if nodeleft[i].val != noderight[i].val:
+        #                 return False
+        #             else:
+        #                 nodeleftnext.append(nodeleft[i].left)
+        #                 nodeleftnext.append(nodeleft[i].right)
+        #                 noderightnext.append(noderight[i].right)
+        #                 noderightnext.append(noderight[i].left)
+        #         elif nodeleft[i] or noderight[i]:
+        #             return False
+        #     nodeleft = nodeleftnext
+        #     noderight = noderightnext
+        # return True
+        
+        #DFS 深度优先搜索
+        
+        if not root:
+            return True
+        return self.dfs(root.left, root.right)
+    def dfs(self, p, q):
+        if not p and not q:
+            return True
+        elif p and q:
+            if p.val != q.val:
+                return False
+            return self.dfs(p.left, q.right) and self.dfs(p.right, q.left)
+        elif p or q:
+            return False
+```
+
 ### 卡牌分组
 
 ```python
