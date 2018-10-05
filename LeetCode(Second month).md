@@ -4,6 +4,89 @@
 
 ## 简单
 
+### 旋转数组
+
+```python
+class Solution(object):
+    def rotate(self, nums, k):
+        """
+        :type nums: List[int]
+        :type k: int
+        :rtype: void Do not return anything, modify nums in-place instead.
+        """
+        
+        l = len(nums)
+        k = k%l
+        if not nums or k == 0:
+            return None
+        
+#         count = 0
+#         i = 0
+#         start = 0
+#         cur = nums[i]
+#         while count < l:
+#             i = (i+k)%l
+#             tmp = nums[i]
+#             nums[i] = cur
+#             if i == start:
+#                 start += 1
+#                 i += 1
+#                 cur = nums[i]
+#             else:
+#                 cur = tmp
+#             count += 1
+
+        nums[:l-k] = nums[:l-k][::-1]
+        nums[l-k:] = nums[l-k:][::-1]
+        nums[:] = nums[:][::-1]
+        
+        # nums[:k],nums[k:]=nums[n-k:],nums[:n-k]
+```
+
+### 验证回文字符串
+
+```python
+class Solution(object):
+    def isPalindrome(self, s):
+        """
+        :type s: str
+        :rtype: bool
+        """
+#         if not s:
+#             return True
+#         s = s.lower()
+#         st = ''
+#         for i in s:
+#             if 'a'<= i <= 'z' or '0' <= i <= '9':
+#                 st += i
+                
+#         return st == st[::-1]
+        import re
+        a = ''.join(re.findall('[0-9a-zA-Z]+',s)).upper()
+        return a == a[::-1]
+```
+
+### 实现strStr()
+
+```python
+class Solution(object):
+    def strStr(self, haystack, needle):
+        """
+        :type haystack: str
+        :type needle: str
+        :rtype: int
+        """
+        if not needle:
+            return 0
+        if not (needle in haystack):
+            return -1
+        # return haystack.find(needle)
+        l = len(needle)
+        for i in range(len(haystack) - l + 1):
+            if haystack[i:i+l] == needle:
+                return i
+```
+
 ### 计数质数
 
 ```python
