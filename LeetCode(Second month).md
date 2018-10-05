@@ -4,6 +4,93 @@
 
 ## 简单
 
+### 两个数组的交集II
+
+```python
+class Solution(object):
+    def intersect(self, nums1, nums2):
+        """
+        :type nums1: List[int]
+        :type nums2: List[int]
+        :rtype: List[int]
+        """
+#         if not nums1 or not nums2:
+#             return []
+#         ret = []
+        
+#         for i in nums1:
+#             if i in nums2:
+#                 if i not in ret: 
+#                     ret += [i] * (nums1.count(i) if nums1.count(i)<=nums2.count(i) else nums2.count(i))
+#         return ret
+        
+        m = len(nums1)
+        n = len(nums2)
+
+        if m == 0 or n == 0:
+            return []
+
+
+        dicts = {}
+        for i in nums1:
+            if i in dicts:
+                dicts[i] += 1
+            else:
+                dicts[i] = 1
+
+        ret = []
+        for j in nums2:
+            if j in dicts and dicts[j] > 0:
+                ret.append(j)
+                dicts[j] -= 1
+
+        return ret
+```
+
+### 加一
+
+```python
+class Solution(object):
+    def plusOne(self, digits):
+        """
+        :type digits: List[int]
+        :rtype: List[int]
+        """
+        carry = 1
+        for i in xrange(len(digits)-1,-1,-1):
+            if carry == 0:
+                return digits
+            tmp = digits[i] + carry
+            carry = tmp/10
+            digits[i] = tmp%10
+        
+        if carry != 0:
+            ret = [1]+digits
+            return ret
+        return digits
+```
+
+### 有效的字母异位词
+
+```python
+class Solution(object):
+    def isAnagram(self, s, t):
+        """
+        :type s: str
+        :type t: str
+        :rtype: bool
+        """
+        ls = len(s)
+        lt = len(t)
+        if ls != lt:
+            return False
+        c = set(t)
+        for i in c:
+            if t.count(i) != s.count(i):
+                return False
+        return True
+```
+
 ### 旋转数组
 
 ```python
