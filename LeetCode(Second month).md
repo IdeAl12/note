@@ -4,6 +4,83 @@
 
 ## 简单
 
+### 颠倒二进制
+
+```python
+class Solution:
+    # @param n, an integer
+    # @return an integer
+    def reverseBits(self, n):
+        ret = str(bin(n)[2:])[::-1]
+        if len(ret)<32:
+            ret = ret + '0'*(32-len(ret))
+        return int(ret,2)
+       # return int(ret + '0' * (32-len(ret)) ,2)
+```
+
+### 缺失数字
+
+```python
+class Solution(object):
+    def missingNumber(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        n = [i for i in xrange(0,len(nums)+1)]
+        ret = list(set(n) - set(nums))
+        return ret[0]
+#         return len(nums)*(len(nums)+1)//2 - sum(nums)
+```
+
+### 打乱数组
+
+```python
+class Solution(object):
+    import random
+    def __init__(self, nums):
+        """
+        :type nums: List[int]
+        """
+        self.orgn = nums
+        
+
+    def reset(self):
+        """
+        Resets the array to its original configuration and return it.
+        :rtype: List[int]
+        """
+        return self.orgn
+
+    def shuffle(self):
+        """
+        Returns a random shuffling of the array.
+        :rtype: List[int]
+        """
+        # ret = []
+        # l = len(self.orgn)
+        # for i in xrange(l):
+        #     ret.append(self.orgn[i])
+        # for i in xrange(l):
+        #     if random.random > 0.5:
+        #         ran = random.randint(0,l-1)
+        #         tmp = ret[ran]
+        #         ret[ran] = ret[i]
+        #         ret[i] = tmp
+        # return ret
+        self.s = self.orgn[:]
+        random.shuffle(self.s)
+        return self.s
+        
+        
+
+
+# Your Solution object will be instantiated and called as such:
+# obj = Solution(nums)
+# param_1 = obj.reset()
+# param_2 = obj.shuffle()
+```
+
 ### 两个数组的交集II
 
 ```python
