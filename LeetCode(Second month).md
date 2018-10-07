@@ -4,6 +4,67 @@
 
 ## 简单
 
+### 仅反转字母
+
+```python
+class Solution(object):
+    def reverseOnlyLetters(self, S):
+        """
+        :type S: str
+        :rtype: str
+        """
+        l = len(S)
+        if l <=1:
+            return S
+        left = 0
+        right = l-1
+        ret = list(S)
+        while left < right:
+            while not ('A'<= ret[left] <='Z' or 'a'<= ret[left] <='z'):
+                left += 1
+                if left == right:
+                    break
+            while not ('A'<= ret[right] <='Z' or 'a'<= ret[right] <='z'):
+                print right
+                right -= 1
+                if right == 0:
+                    break
+            if left < right:
+                tmp = ret[left]
+                ret[left] = ret[right]
+                ret[right] = tmp
+                
+            left += 1
+            right -= 1
+		return ''.join(ret)
+```
+
+### 第一个错误的版本
+
+```python
+# The isBadVersion API is already defined for you.
+# @param version, an integer
+# @return a bool
+# def isBadVersion(version):
+
+class Solution(object):
+    def firstBadVersion(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        left = 0
+        right = n
+        while left <= right:
+            mid = left + (right - left)//2
+            if not isBadVersion(mid) and isBadVersion(mid + 1):
+                return mid + 1
+            elif isBadVersion(mid) and isBadVersion(mid+1):
+                right = mid - 1
+            elif not isBadVersion(mid) and not isBadVersion(mid+1):
+                left = mid + 1
+```
+
 ### 颠倒二进制
 
 ```python
@@ -388,6 +449,75 @@ class Solution(object):
 ```
 
 ## 中等
+
+### 完全二叉树插入器
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class CBTInserter(object):
+
+    def __init__(self, root):
+        """
+        :type root: TreeNode
+        """
+        self.root = root
+
+    def insert(self, v):
+        """
+        :type v: int
+        :rtype: int
+        """
+        def ins(root, v):
+            if not root:
+                return v
+            if root.left == None:
+                root.left = TreeNode(v)
+                # print root.val, 'left'
+                self.father = root.val
+                return;
+            elif root.right == None:
+                root.right = TreeNode(v)
+                # print root.val, 'right'
+                self.father = root.val
+                return;
+            lh = 0
+            rh = 0
+            pNode = root.left
+            while pNode:
+                lh += 1
+                pNode = pNode.right
+            pNode = root.right
+            while pNode:
+                rh += 1
+                pNode = pNode.right
+            if lh != rh:
+                ins(root.right, v)
+            else:
+                ins(root.left, v)
+        
+        ins(self.root, v)
+        return self.father
+        
+
+    def get_root(self):
+        """
+        :rtype: TreeNode
+        """
+        return self.root
+        
+
+
+# Your CBTInserter object will be instantiated and called as such:
+# obj = CBTInserter(root)
+# param_1 = obj.insert(v)
+# param_2 = obj.get_root()
+```
 
 ### 验证二叉搜索树
 
