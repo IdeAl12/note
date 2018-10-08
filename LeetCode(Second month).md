@@ -4,6 +4,51 @@
 
 ## 简单
 
+### 颜色分类
+
+```python
+class Solution(object):
+    def sortColors(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: void Do not return anything, modify nums in-place instead.
+        """
+        dirc = {0:0,1:0,2:0}
+        for i in nums:
+            dirc[i] += 1
+        j = 0
+        for i in xrange(3):
+            while dirc[i] != 0:
+                nums[j] = i
+                j += 1
+                dirc[i] -= 1
+            
+```
+
+```python
+# 三路快排
+class Solution:
+    def sortColors(self, nums):
+        n = len(nums)
+
+        lt = -1
+        gt = n
+        i = 0
+
+        while i < gt:
+            if nums[i] == 0:
+                lt += 1
+                nums[lt], nums[i] = nums[i], nums[lt]
+                i += 1
+            elif nums[i] == 2:
+                gt -= 1
+                nums[gt], nums[i] = nums[i], nums[gt]
+            else:
+                i += 1
+```
+
+
+
 ### 仅反转字母
 
 ```python
