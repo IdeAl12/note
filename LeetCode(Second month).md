@@ -4,6 +4,177 @@
 
 ## 简单
 
+### 仅仅反转字母
+
+```python
+class Solution(object):
+    def reverseOnlyLetters(self, S):
+        """
+        :type S: str
+        :rtype: str
+        """
+        ss = list(S)
+        n = len(S)
+        i = 0
+        j = n-1
+        while i < j:
+            if not ss[i].isalpha():
+                i += 1
+                continue
+            if not ss[j].isalpha():
+                j -= 1
+                continue
+            if i < j:
+                ss[i], ss[j] = ss[j], ss[i]
+            i += 1
+            j -= 1
+        return ''.join(ss)
+```
+
+### 反转字符串中的元音字母
+
+```python
+class Solution(object):
+    def reverseVowels(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        n = len(s)
+        dirc = ['a','e','i','o','u','A','E','I','O','U']
+        i = 0
+        j = n-1
+        ret = list(s)
+        while i<j:
+            while s[i] not in dirc and i<j:
+                i += 1
+            while s[j] not in dirc and i<j:
+                j -= 1
+            if s[i] in dirc and s[j] in dirc:
+                ret[i], ret[j] = ret[j], ret[i]
+            i += 1
+            j -= 1
+        return ''.join(ret)
+```
+
+```python
+class Solution:
+    def reverseVowels(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+
+        ss = list(s)
+
+        aeiou = ['a', 'e', 'i', 'o', 'u', 'A','E','I','O','U']
+        n = len(s)
+        i = 0
+        j = n-1
+
+        while i < j:
+            if ss[i] not in aeiou:
+                i += 1
+                continue
+            if ss[j] not in aeiou:
+                j -= 1
+                continue
+            if (i < j):
+                ss[i], ss[j] = ss[j], ss[i]
+            i += 1
+            j -= 1
+        d = ''
+        return d.join(ss)
+```
+
+### 数组中的第K个最大元素
+
+```python
+class Solution(object):
+    def findKthLargest(self, nums, k):
+        """
+        :type nums: List[int]
+        :type k: int
+        :rtype: int
+        """
+        # nums.sort()
+        # return nums[-k]
+
+    # 采用快速排序方法，分成的数列左边大于右边
+        n = len(nums)
+        if (k > n):
+            return
+        index = self.quickSort(nums, 0, n-1, k)
+        return nums[index]
+        
+        
+    def quickSort(self, nums, l, r, k):
+        if l >= r:
+            return l
+        p = self.partition(nums, l, r)
+        if p + 1 == k:
+            return p
+        if p + 1 > k:
+            return self.quickSort(nums, l, p -1, k)
+        else:
+            return self.quickSort(nums, p + 1, r, k)
+
+
+    def partition(self, nums, l, r):
+        v = nums[l]
+        j = l
+        i = l + 1
+        while i <= r:
+            if nums[i] >= v:
+                nums[j+1],nums[i] = nums[i],nums[j+1]
+                j += 1
+            i += 1
+        nums[l], nums[j] = nums[j], nums[l]
+        return j
+```
+
+### 两数之和II-输入有序数组
+
+```python
+class Solution(object):
+    def twoSum(self, numbers, target):
+        """
+        :type numbers: List[int]
+        :type target: int
+        :rtype: List[int]
+        """
+        l = len(numbers)
+        i = 0
+        j = l-1
+        while i < j:
+            tmp = numbers[i] + numbers[j] 
+            if tmp == target:
+                return [i+1, j+1]
+            elif tmp < target:
+                t = numbers[i]
+                i += 1
+                while numbers[i] == t:
+                    i += 1
+            else:
+                t = numbers[j]
+                j -= 1
+                while numbers[j] == t:
+                    j -= 1
+#         n = len(numbers)
+#         if (n < 2):
+#             return []
+#         i = 0
+#         j = n-1
+#         while i < j:
+#             if numbers[i] + numbers[j] == target:
+#                 return [i+1,j+1]
+#             elif numbers[i] + numbers[j] < target:
+#                 i += 1
+#             else:
+#                 j -= 1
+#         return []    
+```
+
 ### 颜色分类
 
 ```python
@@ -494,6 +665,63 @@ class Solution(object):
 ```
 
 ## 中等
+
+### 长度最小的子数组
+
+```python
+class Solution:
+    def minSubArrayLen(self, s, nums):
+        """
+        :type s: int
+        :type nums: List[int]
+        :rtype: int
+        """
+        
+        n = len(nums)
+        if (n < 1 or sum(nums) < s):
+            return 0
+        
+        # 维护一个滑动窗口nums[i,j], nums[i...j] < s
+        i = 0
+        j = -1
+        total = 0
+        res = n + 1
+        while i <= n-1:
+            if (j + 1 < n) and total < s:
+                j += 1
+                total += nums[j]
+            else:
+                total -= nums[i]
+                i += 1
+            
+            if (total >= s):
+                res = min(res, j-i+1)
+        if res == n+1:
+            return 0
+        return res
+```
+
+### 盛水最多的容器
+
+```python
+class Solution(object):
+    def maxArea(self, height):
+        """
+        :type height: List[int]
+        :rtype: int
+        """
+        maxm = 0
+        n = len(height)
+        i = 0
+        j = n - 1
+        while i < j:
+            maxm = max(maxm, (j - i) * min(height[i], height[j]))
+            if height[i] <= height[j]:
+                i += 1
+            else:
+                j -= 1
+        return maxm
+```
 
 ### 完全二叉树插入器
 
