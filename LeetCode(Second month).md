@@ -4,6 +4,75 @@
 
 ## 简单
 
+### 根据字符出现频率排序
+
+```python
+# class Solution(object):
+#     def frequencySort(self, s):
+#         """
+#         :type s: str
+#         :rtype: str
+#         """
+#         if not s:
+#             return ''
+        
+#         str_map = {}
+#         for i in s:
+#             str_map[i] = str_map.get(i, 0) + 1 
+
+#         tmp = sorted(str_map.items(), key=lambda d:d[1], reverse=True)
+#         return ''.join([key*val for key, val in tmp])
+from collections import Counter
+class Solution:
+    def frequencySort(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        n = len(s)
+        sc = dict(Counter(s))
+        ll = ['' for i in range(0, n+1)]
+        isvisited = set()
+        ret = ""
+        for key,value in sc.items():
+                ll[value] += key * value
+        for i in range(n, -1, -1):
+            if ll[i] != '':
+                ret += ll[i]
+        return ret
+```
+
+### 同构字符串
+
+```python
+class Solution(object):
+    def isIsomorphic(self, s, t):
+        """
+        :type s: str
+        :type t: str
+        :rtype: bool
+        """
+        # dict_s = {}
+        # dict_t = {}
+        # for i in xrange(len(s)):
+        #     if dict_s.get(s[i]) != dict_t.get(t[i]):
+        #         return False
+        #     dict_s[s[i]] = dict_t[t[i]] = i
+        # return True
+        hashmap = {}
+        ismap = {}
+        for i in range(len(s)):
+            if s[i] in hashmap:
+                if hashmap[s[i]] != t[i]:
+                    return False
+            else:
+                if t[i] in ismap:
+                    return False
+                hashmap[s[i]] = t[i]
+                ismap[t[i]] = True
+        return True
+```
+
 ### 仅仅反转字母
 
 ```python
