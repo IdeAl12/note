@@ -4,6 +4,35 @@
 
 ## 简单
 
+### 两数之和
+
+```python
+class Solution(object):
+    def twoSum(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: List[int]
+        """
+        # for i in range(len(nums)):
+        #     for j in range(i+1,len(nums)):
+        #         if nums[j] == target - nums[i]:
+        #             ret = [i, j]
+        #             return ret
+        n = len(nums)
+        if n < 2:
+            return []
+
+        dict1 = dict();
+        for i in range(n):
+            other = target - nums[i]
+            if other in dict1:
+                return [dict1[other], i]
+            dict1[nums[i]] = i
+
+        return []
+```
+
 ### 根据字符出现频率排序
 
 ```python
@@ -734,6 +763,75 @@ class Solution(object):
 ```
 
 ## 中等
+
+### 三数之和
+
+```python
+class Solution(object):
+    def twoSum(self, nums, target, l, r):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: List[int]
+        """
+
+        n = len(nums[l: r+1])
+        if n < 2:
+            return set()
+
+        start = nums[l - 1]
+        dict1 = dict()
+        ret = set()
+        for i in range(l, r+1):
+            other = target - nums[i]
+            if other in dict1:
+                ret.add((start, other, nums[i]))
+            dict1[nums[i]] = i
+        return ret
+    def threeSum(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[List[int]]
+        """
+        n = len(nums)
+        if n < 3:
+            return []
+        nums.sort()
+
+        ret = set()
+        for i in range(n):
+            # nums[i] 为正数，表示后面不可能有两数之后为负
+            if nums[i] > 0:
+                break
+            if (i >= 1 and nums[i] == nums[i-1]):
+                continue
+            ll = self.twoSum(nums, -nums[i], i+1, n-1)
+            if (ll == set()):
+                continue
+            ret = ret | ll
+        return list(ret)
+        
+#         nums_hash = {}
+#         result = list()
+#         for num in nums:
+#             nums_hash[num] = nums_hash.get(num, 0) + 1
+#         if 0 in nums_hash and nums_hash[0] >= 3:
+#             result.append([0, 0, 0])
+
+#         neg = list(filter(lambda x: x < 0, nums_hash))
+#         pos = list(filter(lambda x: x>= 0, nums_hash))
+
+#         for i in neg:
+#             for j in pos:
+#                 dif = 0 - i - j
+#                 if dif in nums_hash:
+#                     if dif in (i, j) and nums_hash[dif] >= 2:
+#                         result.append([i, j, dif])
+#                     if dif < i or dif > j:
+#                         result.append([i, j, dif])
+                    
+#         return result 
+```
 
 ### 长度最小的子数组
 
