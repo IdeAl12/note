@@ -62,4 +62,28 @@ The primary user interface to MoveIt! is through the move_group_interface. You c
 
 ## Move Group Interface Tutorial
 
-In MoveIt!, the primary user interface is through the MoveGroup class.
+In MoveIt!, the primary user interface is through the MoveGroup class. It provides easy to use functionality for most operations that a user may want to carry out, specifically setting joint or pose goals, creating motion plans, moving the robot, adding objects into the environment and attaching/detaching objects from the robot.
+
+### Setup
+
+The MoveGroup class can be setup using the name of the group you would like to control and plan for 
+
+```
+moveit::planning_interface::MoveGroup group("right_arm")
+```
+
+We use the PlanningSceneInterface class to deal directly with the world.
+
+```
+moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
+```
+
+(Optional)Create a publisher for visualizing plans in Rviz.
+
+```c++
+ros::Publisher display_publisher = node_handle.advertise<moveit_msgs::DisplayTrajectory>("/move_group/display_planned_path",1,true);
+moveit_msgs::DisplayTrajectory display_trajectory;
+```
+
+### Getting Basic Information
+
