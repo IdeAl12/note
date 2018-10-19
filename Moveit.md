@@ -1100,3 +1100,49 @@ display_trajectory.trajectory.push_back(response.trajectory);
 display_publisher.publish(display_trajectory);
 ```
 
+### Adding Path Constraints
+
+Add a new pose goal again. This time we will also add a path constraint to the motion.
+
+```C++
+/* Let's create a new pose goal */
+pose.pose.position.x = 0.65;
+pose.pose.position.y = -0.2;
+pose.pose.position.z = -0.1;
+moveit_msgs::Constraints pose_goal_2 = kinematic_constraints::constructGoalConstraints("r_wrist_roll_link", pose, tolerance_pose, tolerance_angle);
+/* First, set the state in the planning scene to the final state of the last plan */
+robot_state.setJointGroupPositions(joint_model_group, response.trajectory.joint_trajectory.points.back().positions);
+/* Now, let's try to move to this new pose goal*/
+req.goal_constraints.clear();
+req.goal_constraints.push_back(pose_goal_2);
+
+/* But, let's impose a path constraint on the motion.
+   Here, we are asking for the end-effector to stay level*/
+geometry_msgs::QuaternionStamped quaternion;
+quaternion.header.frame_id = "torso_lift_link";
+quaternion.quaternion.w = 1.0;
+req.path_constraints = kinematic_constraints::constructGoalConstraints("r_wrist_roll_link", quaternion);
+```
+
+Imposing path constraints requires the planner to reason in the space of possible positions of the end-effector, because of this, we need to specify a bound for the allowed planning volume as well.
+
+```C++
+req.workspace_parameters.min_corner.x = req.workspace_parameters.min_corner.y = req.workspace_parameters.min_corner.z = -2.0;
+req.workspace_parameters.max_corner.x = req.workspace_parameters.max_corner.y = req.workspace_parameters.max_corner.z =  2.0;
+```
+
+Call the planner and visualize all the plans created so far.
+
+```C++
+context = planner_instance->getPlanningContext(planning_scene, req, res.error_code_);
+context->solve(res);
+res.getMessage(response);
+display_trajectory.trajectory.push_back(response.trajectory);
+```
+
+Now you should see four planned trajectories in series
+
+```C++
+display_publisher.publish(display_trajectory);
+```
+
